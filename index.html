@@ -1,0 +1,3188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Program Supplier Suryatokoku</title>
+    
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SheetJS (XLSX) for Excel Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Tom Select CDN (Searchable Modern Select) -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.complete.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+    <style>
+        :root {
+            --primary-red: #D50000;
+            --primary-red-hover: #B70000;
+            --bg-light: #F8FAFC;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: #1E293B;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        .card-modern {
+            background: #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #F1F5F9;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        #global-loading {
+            z-index: 9999;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Tom Select ERP / Select2 Style Overrides */
+        select.tomselected {
+            display: none !important;
+        }
+        .ts-wrapper {
+            width: 100% !important;
+            position: relative !important;
+        }
+        .ts-control {
+            border-radius: 0.75rem !important;
+            padding: 0.6rem 0.75rem !important;
+            background-color: #F8FAFC !important;
+            border: 1px solid #E2E8F0 !important;
+            font-size: 0.75rem !important;
+            font-family: 'Inter', sans-serif !important;
+            box-shadow: none !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        .ts-control input {
+            display: none !important;
+        }
+        .ts-wrapper.single .ts-control {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%6b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 0.75rem center !important;
+            background-size: 1.25em 1.25em !important;
+            padding-right: 2.5rem !important;
+        }
+        .ts-control.focus {
+            border-color: #EF4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+            background-color: #FFFFFF !important;
+        }
+        .ts-dropdown {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            width: 100% !important;
+            border-radius: 0.75rem !important;
+            font-size: 0.75rem !important;
+            z-index: 9999 !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid #E2E8F0 !important;
+            overflow: hidden !important;
+            background-color: #FFFFFF !important;
+        }
+        .ts-dropdown .dropdown-input-wrap {
+            padding: 0.5rem !important;
+            background-color: #F8FAFC !important;
+            border-bottom: 1px solid #E2E8F0 !important;
+        }
+        .ts-dropdown .dropdown-input {
+            width: 100% !important;
+            padding: 0.4rem 0.6rem !important;
+            border-radius: 0.5rem !important;
+            border: 1px solid #CBD5E1 !important;
+            font-size: 0.75rem !important;
+            outline: none !important;
+        }
+        .ts-dropdown .option {
+            padding: 0.5rem 0.75rem !important;
+        }
+        .ts-dropdown .option.active {
+            background-color: #FEF2F2 !important;
+            color: #D50000 !important;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <div id="global-loading" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center text-white hidden">
+        <div class="w-12 h-12 border-4 border-white border-t-red-600 rounded-full animate-spin mb-4"></div>
+        <p id="loading-text" class="text-sm font-semibold tracking-wide">Memuat data...</p>
+    </div>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <div id="login-screen" class="fixed inset-0 z-40 bg-slate-100 flex items-center justify-center p-4">
+        <div class="card-modern w-full max-w-md p-8 border-t-4 border-t-[#D50000]">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-red-50 text-[#D50000] rounded-2xl mb-3 shadow-inner overflow-hidden p-2">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/80x80/D50000/ffffff?text=LOGO';">
+                </div>
+                <h1 class="text-2xl font-bold text-slate-800 tracking-wide">SURYATOKOKU</h1>
+                <p class="text-sm text-slate-500 mt-1">Monitoring Program & Klaim Supplier</p>
+            </div>
+
+            <form id="form-login" class="space-y-5" onsubmit="Auth.handleLogin(event)">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-2">Username</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400">person</span>
+                        <input type="text" id="login-username" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white outline-none text-sm transition" placeholder="Username">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-2">Password</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400">lock</span>
+                        <input type="password" id="login-password" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white outline-none text-sm transition" placeholder="Password">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-[#D50000] hover:bg-red-700 text-white font-semibold rounded-xl shadow-lg shadow-red-500/30 transition flex items-center justify-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-lg">login</span>
+                    Masuk ke Sistem
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-xs text-slate-400">
+                &copy; 2026 Monitoring Program Supplier Suryatokoku
+            </div>
+        </div>
+    </div>
+
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10 hidden" onclick="CACHE.toggleSidebar(false)"></div>
+    <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col z-20 transition-all duration-300 -translate-x-full md:translate-x-0 fixed md:relative h-full">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#D50000] text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-md shadow-red-500/20 overflow-hidden p-1.5">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/40x40/D50000/ffffff?text=S';">
+                </div>
+                <div>
+                    <h2 class="font-bold text-slate-800 text-sm leading-tight">Suryatokoku</h2>
+                    <p class="text-[10px] text-slate-400 font-medium">Program Monitoring</p>
+                </div>
+            </div>
+            <button class="md:hidden text-slate-400 hover:text-slate-600" onclick="CACHE.toggleSidebar(false)">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1 text-sm font-medium">
+            <a href="#dashboard" onclick="Router.navigateTo('dashboard')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+            <a href="#sell-out" onclick="Router.navigateTo('sell-out')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">sell</span>
+                Program Sell Out
+            </a>
+            <a href="#sell-in" onclick="Router.navigateTo('sell-in')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">inventory_2</span>
+                Program Sell In
+            </a>
+            <a href="#klaim-barang" onclick="Router.navigateTo('klaim-barang')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">swap_horizontal_circle</span>
+                Klaim Barang
+            </a>
+            <a href="#budget" onclick="Router.navigateTo('budget')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                Pemakaian Budget
+            </a>
+
+            <div class="pt-4 pb-1 text-[11px] font-bold uppercase text-slate-400 px-4">Pengaturan</div>
+
+            <a href="#master" onclick="Router.navigateTo('master')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">tune</span>
+                Setting Master
+            </a>
+            <a href="#users" id="nav-users" onclick="Router.navigateTo('users')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">manage_accounts</span>
+                Manajemen User
+            </a>
+            <a href="#log-history" id="nav-log" onclick="Router.navigateTo('log-history')" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-[#D50000] transition">
+                <span class="material-symbols-outlined">history</span>
+                Audit Log History
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    <span id="user-avatar-initials">A</span>
+                </div>
+                <div class="truncate">
+                    <p id="user-display-name" class="font-semibold text-xs text-slate-800 truncate">Admin System</p>
+                    <p id="user-display-role" class="text-[10px] text-slate-400">Admin</p>
+                </div>
+            </div>
+            <button onclick="Auth.handleLogout()" class="text-slate-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition" title="Logout">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-600 hover:text-slate-900" onclick="CACHE.toggleSidebar()">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h1 id="page-title" class="text-xl font-bold text-slate-800">Dashboard Overview</h1>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="CACHE.refreshCache()" class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-[#D50000] bg-slate-100 hover:bg-red-50 rounded-lg transition" title="Sync / Refresh Data Server">
+                    <span class="material-symbols-outlined text-base">sync</span>
+                    <span class="hidden sm:inline">Sync Data</span>
+                </button>
+                <span class="text-xs text-slate-400 hidden sm:inline">|</span>
+                <span id="current-date-badge" class="text-xs font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                    03 Aug 2026
+                </span>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+
+            <section id="view-dashboard" class="page-view space-y-6 hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="card-modern p-5 border-l-4 border-l-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">Program Sell Out</p>
+                                <h3 id="dash-sellout-count" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                                <p id="dash-sellout-total" class="text-xs font-semibold text-blue-600 mt-1">Rp 0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                                <span class="material-symbols-outlined">sell</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-modern p-5 border-l-4 border-l-emerald-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">Program Sell In</p>
+                                <h3 id="dash-sellin-count" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                                <p id="dash-sellin-total" class="text-xs font-semibold text-emerald-600 mt-1">Rp 0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                                <span class="material-symbols-outlined">inventory_2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-modern p-5 border-l-4 border-l-amber-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">Total Budget SKP</p>
+                                <h3 id="dash-budget-total" class="text-2xl font-bold text-slate-800 mt-1">Rp 0</h3>
+                                <p id="dash-budget-count" class="text-xs font-medium text-slate-400 mt-1">0 Program</p>
+                            </div>
+                            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
+                                <span class="material-symbols-outlined">account_balance_wallet</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-modern p-5 border-l-4 border-l-purple-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500">Status Klaim</p>
+                                <div class="mt-1 space-y-0.5">
+                                    <p class="text-xs text-purple-700 font-semibold">Done: <span id="dash-klaim-paid">Rp 0</span></p>
+                                    <p class="text-xs text-amber-600 font-semibold">Pending: <span id="dash-klaim-pending">Rp 0</span></p>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
+                                <span class="material-symbols-outlined">pending_actions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card-modern p-6">
+                        <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-red-600">bar_chart</span>
+                            Budget vs Realisasi Klaim per Brand
+                        </h4>
+                        <div class="h-64">
+                            <canvas id="chart-budget-brand"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card-modern p-6">
+                        <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-red-600">show_chart</span>
+                            Trend Nominal Klaim per Bulan
+                        </h4>
+                        <div class="h-64">
+                            <canvas id="chart-klaim-bulan"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-sell-out" class="page-view space-y-5 hidden">
+                <div class="card-modern p-4 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Periode Bulan</label>
+                            <input type="month" id="filter-so-periode" onchange="App.applyFilters('sellOut')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Grup Brand</label>
+                            <select id="filter-so-grup" onchange="App.applyFilters('sellOut')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Grup --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Brand</label>
+                            <select id="filter-so-brand" onchange="App.applyFilters('sellOut')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Brand --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Channel</label>
+                            <select id="filter-so-channel" onchange="App.applyFilters('sellOut')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Channel --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status Klaim</label>
+                            <select id="filter-so-status" onchange="App.applyFilters('sellOut')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Status --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 flex-wrap gap-2">
+                        <div class="relative flex-1 max-w-xs">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+                            <input type="text" id="search-sell-out" oninput="App.applyFilters('sellOut')" placeholder="Cari Promo/SKP/Brand..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="Utils.exportToExcel('table-sell-out', 'Program_Sell_Out')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                <span class="material-symbols-outlined text-base">download</span>
+                                Excel
+                            </button>
+                            <button onclick="Utils.printData('Daftar Program Sell Out', 'table-sell-out')" class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                <span class="material-symbols-outlined text-base">print</span>
+                                Print
+                            </button>
+                            <button onclick="App.openModalSellOut()" class="px-4 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-red-500/20 transition">
+                                <span class="material-symbols-outlined text-base">add</span>
+                                Tambah Sell Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Data Table -->
+                <div class="card-modern overflow-hidden hidden md:block">
+                    <div class="overflow-x-auto">
+                        <table id="table-sell-out" class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 w-10 text-center">No.</th>
+                                    <th class="p-3">Periode</th>
+                                    <th class="p-3">Grup & Brand</th>
+                                    <th class="p-3">Event / Promo</th>
+                                    <th class="p-3">Channel</th>
+                                    <th class="p-3">Budget SKP</th>
+                                    <th class="p-3">Nominal Klaim</th>
+                                    <th class="p-3">Mekanisme</th>
+                                    <th class="p-3">Status Klaim</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-sell-out" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs" id="pagination-sell-out"></div>
+                </div>
+
+                <!-- Mobile Card Layout -->
+                <div class="md:hidden space-y-3" id="cards-sell-out"></div>
+                <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-out-mobile"></div>
+            </section>
+
+            <section id="view-sell-in" class="page-view space-y-5 hidden">
+                <div class="card-modern p-4 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Periode Bulan</label>
+                            <input type="month" id="filter-si-periode" onchange="App.applyFilters('sellIn')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Grup Brand</label>
+                            <select id="filter-si-grup" onchange="App.applyFilters('sellIn')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Grup --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Brand</label>
+                            <select id="filter-si-brand" onchange="App.applyFilters('sellIn')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Brand --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status Klaim</label>
+                            <select id="filter-si-status" onchange="App.applyFilters('sellIn')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Status --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 flex-wrap gap-2">
+                        <div class="relative flex-1 max-w-xs">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+                            <input type="text" id="search-sell-in" oninput="App.applyFilters('sellIn')" placeholder="Cari Program/SKP/Brand..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="Utils.exportToExcel('table-sell-in', 'Program_Sell_In')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                <span class="material-symbols-outlined text-base">download</span>
+                                Excel
+                            </button>
+                            <button onclick="App.openModalSellIn()" class="px-4 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-red-500/20 transition">
+                                <span class="material-symbols-outlined text-base">add</span>
+                                Tambah Sell In
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-modern overflow-hidden hidden md:block">
+                    <div class="overflow-x-auto">
+                        <table id="table-sell-in" class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 w-10 text-center">No.</th>
+                                    <th class="p-3">Periode</th>
+                                    <th class="p-3">Nama Program</th>
+                                    <th class="p-3">Grup & Brand</th>
+                                    <th class="p-3">Target</th>
+                                    <th class="p-3">Cashback</th>
+                                    <th class="p-3">Pencapaian (% ACH)</th>
+                                    <th class="p-3">Nominal Klaim</th>
+                                    <th class="p-3">Status Klaim</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-sell-in" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs" id="pagination-sell-in"></div>
+                </div>
+
+                <div class="md:hidden space-y-3" id="cards-sell-in"></div>
+                <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-in-mobile"></div>
+            </section>
+
+            <section id="view-klaim-barang" class="page-view space-y-5 hidden">
+                <div class="card-modern p-4 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Periode Bulan</label>
+                            <input type="month" id="filter-kb-periode" onchange="App.applyFilters('klaimBarang')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Grup Brand</label>
+                            <select id="filter-kb-grup" onchange="App.applyFilters('klaimBarang')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Grup --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Brand</label>
+                            <select id="filter-kb-brand" onchange="App.applyFilters('klaimBarang')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Brand --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status Klaim</label>
+                            <select id="filter-kb-status" onchange="App.applyFilters('klaimBarang')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Status --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 flex-wrap gap-2">
+                        <div class="relative flex-1 max-w-xs">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+                            <input type="text" id="search-klaim-barang" oninput="App.applyFilters('klaimBarang')" placeholder="Cari Klaim Barang/PO/SKP..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <button onclick="Utils.exportToExcel('table-klaim-barang', 'Klaim_Barang')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                            <span class="material-symbols-outlined text-base">download</span>
+                            Export Excel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-modern overflow-hidden hidden md:block">
+                    <div class="overflow-x-auto">
+                        <table id="table-klaim-barang" class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 w-10 text-center">No.</th>
+                                    <th class="p-3">Sumber / Periode</th>
+                                    <th class="p-3">Grup & Brand</th>
+                                    <th class="p-3">Nomor & File SKP</th>
+                                    <th class="p-3">Nominal Klaim</th>
+                                    <th class="p-3">Nominal HET</th>
+                                    <th class="p-3">Nominal HPP</th>
+                                    <th class="p-3">Selisih HET</th>
+                                    <th class="p-3">PO CSA</th>
+                                    <th class="p-3">Status Klaim</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-klaim-barang" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs" id="pagination-klaim-barang"></div>
+                </div>
+
+                <div class="md:hidden space-y-3" id="cards-klaim-barang"></div>
+                <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-klaim-barang-mobile"></div>
+            </section>
+
+            <section id="view-budget" class="page-view space-y-5 hidden">
+                <div class="card-modern p-4 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Periode Bulan</label>
+                            <input type="month" id="filter-bud-periode" onchange="App.applyFilters('budget')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Grup Brand</label>
+                            <select id="filter-bud-grup" onchange="App.applyFilters('budget')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Grup --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Brand</label>
+                            <select id="filter-bud-brand" onchange="App.applyFilters('budget')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Brand --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 flex-wrap gap-2">
+                        <div class="relative flex-1 max-w-xs">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+                            <input type="text" id="search-budget" oninput="App.applyFilters('budget')" placeholder="Cari Rincian Budget..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <button onclick="App.openModalBudget()" class="px-4 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-red-500/20 transition">
+                            <span class="material-symbols-outlined text-base">add</span>
+                            Input Budget
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-modern overflow-hidden hidden md:block">
+                    <div class="overflow-x-auto">
+                        <table id="table-budget" class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 w-10 text-center">No.</th>
+                                    <th class="p-3">Tanggal / Periode</th>
+                                    <th class="p-3">Sumber Program</th>
+                                    <th class="p-3">Grup & Brand</th>
+                                    <th class="p-3">Channel</th>
+                                    <th class="p-3">Nominal Budget</th>
+                                    <th class="p-3">Keterangan Pemakaian</th>
+                                    <th class="p-3">Status Pemakaian</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-budget" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs" id="pagination-budget"></div>
+                </div>
+
+                <div class="md:hidden space-y-3" id="cards-budget"></div>
+                <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-budget-mobile"></div>
+            </section>
+
+            <section id="view-master" class="page-view space-y-5 hidden">
+                <div class="card-modern p-4">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pilih Kategori Master</p>
+                    <div id="master-category-tabs" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <h3 id="master-active-cat-title" class="text-sm font-bold text-slate-800">Item Master</h3>
+                    <button onclick="App.openModalMaster()" class="px-4 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-red-500/20 transition">
+                        <span class="material-symbols-outlined text-base">add</span>
+                        Tambah Item Master
+                    </button>
+                </div>
+
+                <div class="card-modern overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 w-10 text-center">No.</th>
+                                    <th class="p-3">Kategori</th>
+                                    <th class="p-3">Nilai Opsi Dropdown</th>
+                                    <th class="p-3">Status Aktif</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-master" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-users" class="page-view space-y-5 hidden">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-800">Daftar Pengguna Sistem</h3>
+                    <button onclick="App.openModalUser()" class="px-4 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-red-500/20 transition">
+                        <span class="material-symbols-outlined text-base">person_add</span>
+                        Tambah User Baru
+                    </button>
+                </div>
+
+                <div class="card-modern overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 w-10 text-center">No.</th>
+                                    <th class="p-3">Username</th>
+                                    <th class="p-3">Nama Lengkap</th>
+                                    <th class="p-3">Role Access</th>
+                                    <th class="p-3">Status Account</th>
+                                    <th class="p-3">Last Login</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-users" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-log-history" class="page-view space-y-5 hidden">
+                <div class="card-modern overflow-hidden">
+                    <div class="p-4 border-b border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Jejak Audit Aktivitas Pengguna</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 w-10 text-center">No.</th>
+                                    <th class="p-3">Timestamp</th>
+                                    <th class="p-3">User</th>
+                                    <th class="p-3">Aksi</th>
+                                    <th class="p-3">Menu</th>
+                                    <th class="p-3">Target ID</th>
+                                    <th class="p-3">Perubahan Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-log-history" class="divide-y divide-slate-100 text-slate-700 font-mono text-[11px]"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+
+    <!-- MODAL QUICK ADD MASTER -->
+    <div id="modal-quick-add-master" class="fixed inset-0 z-[70] modal-backdrop flex items-center justify-center p-4 hidden">
+        <div class="card-modern w-full max-w-sm bg-white overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 id="quick-add-title" class="text-xs font-bold text-slate-800">Tambah Master Baru</h3>
+                <button onclick="Utils.closeModal('modal-quick-add-master')" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined text-base">close</span>
+                </button>
+            </div>
+
+            <form id="form-quick-add-master" onsubmit="App.saveQuickMasterItem(event)" class="p-5 space-y-4 text-xs">
+                <input type="hidden" id="quick-add-kategori">
+                <input type="hidden" id="quick-add-target-select-id">
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1" id="quick-add-label-category">Nama Opsi Baru *</label>
+                    <input type="text" id="quick-add-nilai" required placeholder="Masukkan item baru..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="Utils.closeModal('modal-quick-add-master')" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-xl font-semibold">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-[#D50000] hover:bg-red-700 text-white rounded-xl font-semibold shadow-md shadow-red-500/20">Simpan Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL SELL OUT -->
+    <div id="modal-sell-out" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
+        <div class="card-modern w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden bg-white">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 id="modal-so-title" class="text-sm font-bold text-slate-800">Tambah Program Sell Out</h3>
+                <button onclick="Utils.closeModal('modal-sell-out')" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="form-sell-out" onsubmit="App.saveSellOut(event)" class="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+                <input type="hidden" id="so-id">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Periode Bulan *</label>
+                        <input type="month" id="so-periode" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Channel *</label>
+                        <select id="so-channel" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Grup Brand *</label>
+                        <select id="so-grup" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Brand *</label>
+                        <select id="so-brand" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Tanggal Mulai Promo *</label>
+                        <input type="date" id="so-tgl-mulai" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Tanggal Berakhir Promo *</label>
+                        <input type="date" id="so-tgl-akhir" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Promo / Nama Event *</label>
+                        <input type="text" id="so-event" required placeholder="Contoh: Diskon Kemerdekaan 17%" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nomor SKP (Optional)</label>
+                        <input type="text" id="so-nomor-skp" placeholder="Nomor Surat Kesepakatan Program" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Deskripsi Promo</label>
+                    <textarea id="so-deskripsi" rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500" placeholder="Detail mekanisme promo..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Budget Sesuai SKP (Rp) *</label>
+                        <input type="text" inputmode="numeric" id="so-budget" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nominal Klaim (Rp) *</label>
+                        <input type="text" inputmode="numeric" id="so-nominal-klaim" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Mekanisme Klaim *</label>
+                        <select id="so-mekanisme" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Metode Klaim *</label>
+                        <select id="so-metode" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Status Klaim *</label>
+                        <select id="so-status" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                        <p id="so-status-hint" class="text-[10px] text-amber-600 font-medium hidden mt-1">*Diubah via Menu Klaim Barang (Mekanisme Ganti Produk)</p>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Tanggal Diklaim / Diproses</label>
+                        <input type="date" id="so-tgl-diklaim" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-4">
+                    <label class="block font-semibold text-slate-700 mb-1">Upload File SKP & Pendukung (Google Drive)</label>
+                    <input type="file" id="so-files-input" multiple onchange="App.handleFileUpload(event, 'so')" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-[#D50000] hover:file:bg-red-100">
+                    <div id="so-files-list" class="mt-3 space-y-2"></div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="Utils.closeModal('modal-sell-out')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-semibold">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl font-semibold shadow-lg shadow-red-500/20">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL SELL IN -->
+    <div id="modal-sell-in" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
+        <div class="card-modern w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden bg-white">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 id="modal-si-title" class="text-sm font-bold text-slate-800">Tambah Program Sell In</h3>
+                <button onclick="Utils.closeModal('modal-sell-in')" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="form-sell-in" onsubmit="App.saveSellIn(event)" class="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+                <input type="hidden" id="si-id">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Periode Bulan *</label>
+                        <input type="month" id="si-periode" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Program *</label>
+                        <select id="si-nama-program" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Grup Brand *</label>
+                        <select id="si-grup" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Brand *</label>
+                        <select id="si-brand" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Target Sales (Rp) *</label>
+                        <input type="text" inputmode="numeric" id="si-target" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Cashback (Rp) *</label>
+                        <input type="text" inputmode="numeric" id="si-cashback" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nominal Klaim (Rp) *</label>
+                        <input type="text" inputmode="numeric" id="si-nominal-klaim" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Pencapaian / Nilai ACH (%) *</label>
+                        <input type="number" id="si-ach" required step="0.1" min="0" placeholder="100" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Status Pencapaian *</label>
+                        <select id="si-status-pencapaian" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Mekanisme Klaim *</label>
+                        <select id="si-mekanisme" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Metode Klaim *</label>
+                        <select id="si-metode" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Status Klaim *</label>
+                        <select id="si-status" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                        <p id="si-status-hint" class="text-[10px] text-amber-600 font-medium hidden mt-1">*Diubah via Menu Klaim Barang (Mekanisme Ganti Produk)</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Keterangan / Catatan</label>
+                    <textarea id="si-keterangan" rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                </div>
+
+                <div class="border-t border-slate-200 pt-4">
+                    <label class="block font-semibold text-slate-700 mb-1">Upload File SKP & Pendukung</label>
+                    <input type="file" id="si-files-input" multiple onchange="App.handleFileUpload(event, 'si')" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-[#D50000]">
+                    <div id="si-files-list" class="mt-3 space-y-2"></div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="Utils.closeModal('modal-sell-in')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-semibold">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl font-semibold shadow-lg shadow-red-500/20">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL KLAIM BARANG -->
+    <div id="modal-klaim-barang" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
+        <div class="card-modern w-full max-w-lg bg-white overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="text-sm font-bold text-slate-800">Update Klaim Barang (Ganti Produk)</h3>
+                <button onclick="Utils.closeModal('modal-klaim-barang')" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="form-klaim-barang" onsubmit="App.saveKlaimBarang(event)" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="kb-id">
+                <input type="hidden" id="kb-nominal-klaim-val">
+
+                <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div>
+                        <span class="block text-[10px] text-slate-400 font-semibold uppercase">Sumber Program</span>
+                        <span id="kb-sumber-lbl" class="font-bold text-slate-800">-</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-slate-400 font-semibold uppercase">Ref ID Program</span>
+                        <span id="kb-ref-id-lbl" class="font-mono font-bold text-slate-800">-</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-slate-400 font-semibold uppercase">Brand</span>
+                        <span id="kb-brand-lbl" class="font-semibold text-slate-700">-</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-slate-400 font-semibold uppercase">Nominal Klaim</span>
+                        <span id="kb-nominal-klaim-lbl" class="font-bold text-blue-600">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nominal HET (Rp) *</label>
+                        <input type="text" inputmode="numeric" id="kb-nominal-het" required oninput="Utils.formatCurrencyInput(this); App.calculateKlaimSelisih();" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nominal HPP (Rp) *</label>
+                        <input type="text" inputmode="numeric" id="kb-nominal-hpp" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 flex items-center justify-between">
+                    <span class="font-semibold text-amber-800">Selisih HET (Nominal HET - Klaim):</span>
+                    <span id="kb-selisih-lbl" class="font-bold text-amber-900 text-sm">Rp 0</span>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nomor PO CSA</label>
+                    <input type="text" id="kb-nomor-po-csa" placeholder="Masukkan nomor PO CSA..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Status Klaim *</label>
+                    <select id="kb-status" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="Utils.closeModal('modal-klaim-barang')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-semibold">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl font-semibold shadow-lg shadow-red-500/20">Simpan Klaim Barang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PEMAKAIAN BUDGET -->
+    <div id="modal-budget" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
+        <div class="card-modern w-full max-w-xl bg-white overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="text-sm font-bold text-slate-800">Input Pemakaian Budget</h3>
+                <button onclick="Utils.closeModal('modal-budget')" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="form-budget" onsubmit="App.saveBudget(event)" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="bud-id">
+
+                <div class="flex gap-4 p-2 bg-slate-100 rounded-xl">
+                    <label class="flex-1 flex items-center justify-center gap-2 p-2 bg-white rounded-lg shadow-sm font-semibold cursor-pointer">
+                        <input type="radio" name="bud-source-type" value="REF" checked onchange="App.toggleBudgetSourceMode('REF')">
+                        Pilih Dari Program
+                    </label>
+                    <label class="flex-1 flex items-center justify-center gap-2 p-2 rounded-lg font-semibold cursor-pointer">
+                        <input type="radio" name="bud-source-type" value="MANUAL" onchange="App.toggleBudgetSourceMode('MANUAL')">
+                        Input Manual
+                    </label>
+                </div>
+
+                <div id="bud-sec-ref">
+                    <label class="block font-semibold text-slate-700 mb-1">Pilih Program Sell Out / Sell In *</label>
+                    <select id="bud-ref-program" onchange="App.handleBudgetProgramSelect()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="">-- Pilih Program --</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Periode Bulan *</label>
+                        <input type="month" id="bud-periode" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Channel</label>
+                        <select id="bud-channel" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Grup Brand *</label>
+                        <select id="bud-grup" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Brand *</label>
+                        <select id="bud-brand" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nominal Pemakaian Budget (Rp) *</label>
+                    <input type="text" inputmode="numeric" id="bud-nominal" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Pemakaian *</label>
+                    <input type="date" id="bud-tgl-pemakaian" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Rincian / Keterangan Pemakaian Budget *</label>
+                    <textarea id="bud-keterangan" rows="2" required placeholder="Detail pemakaian dana..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Status Pemakaian Budget *</label>
+                    <select id="bud-status" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500"></select>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="Utils.closeModal('modal-budget')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-semibold">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl font-semibold shadow-lg shadow-red-500/20">Simpan Pemakaian Budget</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL MASTER DATA -->
+    <div id="modal-master" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
+        <div class="card-modern w-full max-w-md bg-white overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="text-sm font-bold text-slate-800">Master Item Dropdown</h3>
+                <button onclick="Utils.closeModal('modal-master')" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="form-master" onsubmit="App.saveMasterItem(event)" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="mst-id">
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Kategori Dropdown *</label>
+                    <select id="mst-kategori" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="NAMA_GRUP_BRAND">Nama Grup Brand</option>
+                        <option value="NAMA_BRAND">Nama Brand</option>
+                        <option value="CHANNEL">Channel</option>
+                        <option value="MEKANISME_KLAIM">Mekanisme Klaim</option>
+                        <option value="METODE_KLAIM">Metode Klaim</option>
+                        <option value="STATUS_KLAIM">Status Klaim</option>
+                        <option value="STATUS_PENCAPAIAN">Status Pencapaian</option>
+                        <option value="NAMA_PROGRAM">Nama Program</option>
+                        <option value="STATUS_PEMAKAIAN_BUDGET">Status Pemakaian Budget</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nilai / Opsi Teks *</label>
+                    <input type="text" id="mst-nilai" required placeholder="Masukkan nama opsi..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div class="flex items-center gap-2 pt-2">
+                    <input type="checkbox" id="mst-aktif" checked class="w-4 h-4 text-red-600 rounded">
+                    <label for="mst-aktif" class="font-semibold text-slate-700">Status Aktif</label>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="Utils.closeModal('modal-master')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-semibold">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl font-semibold shadow-lg shadow-red-500/20">Simpan Master</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL USER MANAGEMENT -->
+    <div id="modal-user" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
+        <div class="card-modern w-full max-w-md bg-white overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="text-sm font-bold text-slate-800">Manajemen Pengguna</h3>
+                <button onclick="Utils.closeModal('modal-user')" class="text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="form-user" onsubmit="App.saveUser(event)" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Username *</label>
+                    <input type="text" id="usr-username" required placeholder="username_login" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                    <input type="text" id="usr-nama" required placeholder="Nama Lengkap User" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Password <span id="usr-pass-hint" class="text-slate-400 font-normal">(Kosongkan jika tak diubah)</span></label>
+                    <input type="password" id="usr-password" placeholder="••••••••" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Role Akses *</label>
+                    <select id="usr-role" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="User">User Standard</option>
+                        <option value="Admin">Administrator</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2 pt-2">
+                    <input type="checkbox" id="usr-aktif" checked class="w-4 h-4 text-red-600 rounded">
+                    <label for="usr-aktif" class="font-semibold text-slate-700">Akun Aktif</label>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="Utils.closeModal('modal-user')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-semibold">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl font-semibold shadow-lg shadow-red-500/20">Simpan User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT SYSTEM ENGINE -->
+    <script>
+        const CONFIG = {
+            SUPABASE_URL: 'https://ofaljbvrxhhkjnugkgbr.supabase.co',
+            SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mYWxqYnZyeGhoa2pudWdrZ2JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NTU3NjYsImV4cCI6MjEwMTMzMTc2Nn0.EdxsU5ISLWnuhzMYYI8fyZpK9AHitDVGC8KWG6T0aXE',
+            GAS_BACKUP_URL: 'https://script.google.com/macros/s/AKfycbzhSknhzUioOOauwYPPVog4n2i9AeGRG2RKBsomky1MEVW2q0wRnkHyXvnuXMU_WL09/exec',
+            APP_TITLE: 'Monitoring Program Supplier Suryatokoku',
+            MASTER_KEYS: [
+                'NAMA_GRUP_BRAND', 'NAMA_BRAND', 'CHANNEL', 'MEKANISME_KLAIM',
+                'METODE_KLAIM', 'STATUS_KLAIM', 'STATUS_PENCAPAIAN', 'NAMA_PROGRAM',
+                'STATUS_PEMAKAIAN_BUDGET'
+            ],
+            BADGE_COLORS: {
+                'Selesai / Paid': 'bg-emerald-100 text-emerald-700',
+                'Disetujui': 'bg-blue-100 text-blue-700',
+                'Proses Verifikasi': 'bg-amber-100 text-amber-700',
+                'Draft / Belum Diklaim': 'bg-slate-100 text-slate-600',
+                'Tercapai': 'bg-emerald-100 text-emerald-700',
+                'Tidak Tercapai': 'bg-rose-100 text-rose-700',
+                'On Track': 'bg-emerald-100 text-emerald-700',
+                'Over Budget': 'bg-rose-100 text-rose-700'
+            }
+        };
+
+        let supabaseClient = null;
+        try {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+            }
+        } catch (err) {
+            console.error('Failed to initialize Supabase client:', err);
+        }
+
+        const Utils = {
+            formatRupiah(num) {
+                if (num === null || num === undefined || isNaN(num)) return 'Rp 0';
+                return 'Rp ' + Number(num).toLocaleString('id-ID');
+            },
+
+            formatDate(dateStr) {
+                if (!dateStr) return '-';
+                try {
+                    const d = new Date(dateStr);
+                    if (isNaN(d.getTime())) return dateStr;
+                    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                } catch (e) {
+                    return dateStr;
+                }
+            },
+
+            formatMonthValue(val) {
+                if (!val) return '';
+                if (/^\d{4}-\d{2}$/.test(val)) return val;
+                const d = new Date(val);
+                if (isNaN(d.getTime())) return '';
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                return `${yyyy}-${mm}`;
+            },
+
+            formatPeriodeBulan(val) {
+                if (!val) return '-';
+                let dateObj = null;
+                if (/^\d{4}-\d{2}$/.test(val)) {
+                    const [year, month] = val.split('-');
+                    dateObj = new Date(Number(year), Number(month) - 1, 1);
+                } else {
+                    dateObj = new Date(val);
+                }
+
+                if (!dateObj || isNaN(dateObj.getTime())) return val;
+                return dateObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+            },
+
+            formatCurrencyInput(inputElem) {
+                let value = inputElem.value.replace(/\D/g, '');
+                if (!value) {
+                    inputElem.value = '';
+                    return;
+                }
+                inputElem.value = Number(value).toLocaleString('id-ID');
+            },
+
+            parseCurrencyValue(val) {
+                if (!val) return 0;
+                if (typeof val === 'number') return val;
+                const cleaned = val.toString().replace(/\./g, '').replace(/,/g, '.').replace(/\D/g, '');
+                return Number(cleaned) || 0;
+            },
+
+            formatCurrencyValue(num) {
+                if (!num || isNaN(num)) return '';
+                return Number(num).toLocaleString('id-ID');
+            },
+
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                if (!container) return;
+
+                const bgColors = {
+                    success: 'bg-emerald-600',
+                    error: 'bg-red-600',
+                    info: 'bg-slate-800',
+                    warning: 'bg-amber-600'
+                };
+
+                const icons = {
+                    success: 'check_circle',
+                    error: 'error',
+                    info: 'info',
+                    warning: 'warning'
+                };
+
+                const toast = document.createElement('div');
+                toast.className = `${bgColors[type] || bgColors.info} text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transition-all duration-300 transform translate-y-2 pointer-events-auto opacity-0`;
+                toast.innerHTML = `
+                    <span class="material-symbols-outlined text-base">${icons[type] || 'info'}</span>
+                    <span class="flex-1">${message}</span>
+                `;
+
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-2', 'opacity-0');
+                }, 10);
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            },
+
+            showLoading(text = 'Memuat data...') {
+                const overlay = document.getElementById('global-loading');
+                const label = document.getElementById('loading-text');
+                if (label) label.innerText = text;
+                if (overlay) overlay.classList.remove('hidden');
+            },
+
+            hideLoading() {
+                const overlay = document.getElementById('global-loading');
+                if (overlay) overlay.classList.add('hidden');
+            },
+
+            openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) modal.classList.remove('hidden');
+            },
+
+            closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) modal.classList.add('hidden');
+            },
+
+            fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            },
+
+            exportToExcel(tableId, filename) {
+                try {
+                    const table = document.getElementById(tableId);
+                    if (!table) return;
+                    const wb = XLSX.utils.table_to_book(table, { sheet: "Data" });
+                    XLSX.writeFile(wb, `${filename}_${new Date().toISOString().slice(0,10)}.xlsx`);
+                    Utils.showToast('File Excel berhasil diunduh.', 'success');
+                } catch (err) {
+                    Utils.showToast('Gagal mengunduh Excel: ' + err.message, 'error');
+                }
+            },
+
+            printData(title, tableId) {
+                const table = document.getElementById(tableId);
+                if (!table) return;
+
+                const clone = table.cloneNode(true);
+                clone.querySelectorAll('tr').forEach(row => {
+                    if (row.children.length > 0) {
+                        row.removeChild(row.children[row.children.length - 1]);
+                    }
+                });
+
+                const win = window.open('', '', 'height=700,width=900');
+                win.document.write(`
+                    <html>
+                        <head>
+                            <title>${title}</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+                                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
+                                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                                th { background-color: #f2f2f2; font-weight: bold; }
+                                th:last-child, td:last-child { display: table-cell; }
+                            </style>
+                        </head>
+                        <body>
+                            <h2>${title}</h2>
+                            <p>Monitoring Program Supplier Suryatokoku - ${new Date().toLocaleDateString('id-ID')}</p>
+                            ${clone.outerHTML}
+                        </body>
+                    </html>
+                `);
+                win.document.close();
+                win.print();
+            }
+        };
+
+        async function triggerSheetsBackup(sheetName, action, data) {
+            if (!CONFIG.GAS_BACKUP_URL || CONFIG.GAS_BACKUP_URL.trim() === '') return;
+            try {
+                fetch(CONFIG.GAS_BACKUP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sheetName, action, data })
+                }).catch(e => console.warn('GAS Backup trigger warning:', e));
+            } catch (err) {
+                console.warn('GAS Backup error:', err);
+            }
+        }
+
+        async function logAuditActivity(action, menuName, targetId, oldData, newData) {
+            const user = Auth.getLoggedInUser();
+            const now = new Date();
+            const logObj = {
+                id: 'LOG-' + now.getTime() + '-' + Math.floor(Math.random() * 1000),
+                tanggal: Utils.formatDate(now),
+                jam: now.toTimeString().split(' ')[0],
+                user_login: user ? user.username : 'SYSTEM',
+                aksi: action,
+                nama_menu: menuName,
+                id_data: targetId || '-',
+                perubahan_lama: oldData ? JSON.stringify(oldData) : '-',
+                perubahan_baru: newData ? JSON.stringify(newData) : '-'
+            };
+
+            if (supabaseClient) {
+                await supabaseClient.from('log_history').insert([logObj]);
+                triggerSheetsBackup('LOG_HISTORY', 'UPSERT', logObj);
+            }
+        }
+
+        const CACHE = {
+            master: {},        
+            masterRaw: [],     
+            sellOut: [],
+            sellIn: [],
+            klaimBarang: [],
+            budget: [],
+            usersList: [],
+            logHistory: [],
+            isLoaded: false,
+
+            async initCacheData() {
+                Utils.showLoading('SINKRONISASI DATA SUPABASE...');
+                try {
+                    if (!supabaseClient) {
+                        Utils.hideLoading();
+                        Utils.showToast('Supabase Client belum dikonfigurasi!', 'error');
+                        return;
+                    }
+
+                    const [resMaster, resSellOut, resSellIn, resKlaim, resBudget] = await Promise.all([
+                        supabaseClient.from('master').select('*').order('urutan', { ascending: true }),
+                        supabaseClient.from('sell_out').select('*').order('created_at', { ascending: false }),
+                        supabaseClient.from('sell_in').select('*').order('created_at', { ascending: false }),
+                        supabaseClient.from('klaim_barang').select('*').order('created_at', { ascending: false }),
+                        supabaseClient.from('pemakaian_budget').select('*').order('created_at', { ascending: false })
+                    ]);
+
+                    if (resMaster.data) {
+                        this.masterRaw = resMaster.data;
+                        this.processMasterGroup(this.masterRaw);
+                    }
+                    if (resSellOut.data) this.sellOut = resSellOut.data;
+                    if (resSellIn.data) this.sellIn = resSellIn.data;
+                    if (resKlaim.data) this.klaimBarang = resKlaim.data;
+                    if (resBudget.data) this.budget = resBudget.data;
+
+                    if (Auth.getUserRole() === 'Admin') {
+                        const [resUsers, resLogs] = await Promise.all([
+                            supabaseClient.from('users').select('*').order('created_at', { ascending: false }),
+                            supabaseClient.from('log_history').select('*').order('created_at', { ascending: false }).limit(200)
+                        ]);
+                        if (resUsers.data) this.usersList = resUsers.data;
+                        if (resLogs.data) this.logHistory = resLogs.data;
+                    }
+
+                    this.isLoaded = true;
+                    Utils.hideLoading();
+                    Utils.showToast('Data Supabase berhasil dimuat.', 'success');
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal memuat Supabase: ' + err.message, 'error');
+                }
+            },
+
+            processMasterGroup(rawList) {
+                this.master = {};
+                CONFIG.MASTER_KEYS.forEach(key => this.master[key] = []);
+
+                rawList.forEach(item => {
+                    if (item.status_aktif) {
+                        if (!this.master[item.kategori]) this.master[item.kategori] = [];
+                        this.master[item.kategori].push(item);
+                    }
+                });
+
+                Object.keys(this.master).forEach(k => {
+                    this.master[k].sort((a, b) => a.urutan - b.urutan);
+                });
+            },
+
+            async refreshCache() {
+                await this.initCacheData();
+                Router.renderCurrentPage();
+            },
+
+            updateCacheItem(menu, updatedItem) {
+                const list = this[menu];
+                if (!Array.isArray(list)) return;
+
+                const index = list.findIndex(x => x.id === updatedItem.id || x.username === updatedItem.username);
+                if (index !== -1) {
+                    list[index] = updatedItem;
+                } else {
+                    list.unshift(updatedItem);
+                }
+            },
+
+            deleteCacheItem(menu, id) {
+                const list = this[menu];
+                if (!Array.isArray(list)) return;
+                this[menu] = list.filter(x => x.id !== id && x.username !== id);
+            },
+
+            toggleSidebar(show = null) {
+                const sidebar = document.getElementById('sidebar');
+                const backdrop = document.getElementById('sidebar-backdrop');
+                if (!sidebar) return;
+
+                const isCurrentlyOpen = !sidebar.classList.contains('-translate-x-full');
+                const shouldOpen = show !== null ? show : !isCurrentlyOpen;
+
+                if (shouldOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    if (backdrop) backdrop.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    if (backdrop) backdrop.classList.add('hidden');
+                }
+            }
+        };
+
+        const Router = {
+            activePage: 'dashboard',
+
+            init() {
+                window.addEventListener('hashchange', () => this.handleHashChange());
+                this.handleHashChange();
+            },
+
+            handleHashChange() {
+                const hash = window.location.hash.replace('#', '') || 'dashboard';
+                this.navigateTo(hash);
+            },
+
+            navigateTo(pageName) {
+                if (!Auth.checkAuth()) return;
+
+                if ((pageName === 'users' || pageName === 'log-history') && Auth.getUserRole() !== 'Admin') {
+                    Utils.showToast('Akses ditolak! Menu khusus Administrator.', 'warning');
+                    this.navigateTo('dashboard');
+                    return;
+                }
+
+                this.activePage = pageName;
+                window.location.hash = pageName;
+
+                document.querySelectorAll('.page-view').forEach(view => view.classList.add('hidden'));
+                const targetView = document.getElementById(`view-${pageName}`);
+                if (targetView) targetView.classList.remove('hidden');
+
+                if (window.innerWidth < 768) {
+                    CACHE.toggleSidebar(false);
+                }
+
+                this.updateNavActive(pageName);
+                this.renderCurrentPage();
+            },
+
+            updateNavActive(pageName) {
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const href = link.getAttribute('href').replace('#', '');
+                    if (href === pageName) {
+                        link.classList.add('bg-red-50', 'text-[#D50000]', 'font-bold');
+                        link.classList.remove('text-slate-600');
+                    } else {
+                        link.classList.remove('bg-red-50', 'text-[#D50000]', 'font-bold');
+                        link.classList.add('text-slate-600');
+                    }
+                });
+
+                const titles = {
+                    'dashboard': 'Dashboard Overview',
+                    'sell-out': 'Program Sell Out',
+                    'sell-in': 'Program Sell In',
+                    'klaim-barang': 'Klaim Barang',
+                    'budget': 'Pemakaian Budget',
+                    'master': 'Setting Master Dropdown',
+                    'users': 'Manajemen Pengguna',
+                    'log-history': 'Audit Log History'
+                };
+                const titleEl = document.getElementById('page-title');
+                if (titleEl) titleEl.innerText = titles[pageName] || 'Overview';
+            },
+
+            renderCurrentPage() {
+                if (!CACHE.isLoaded) return;
+
+                switch (this.activePage) {
+                    case 'dashboard': App.renderDashboard(); break;
+                    case 'sell-out': App.renderSellOutTable(); break;
+                    case 'sell-in': App.renderSellInTable(); break;
+                    case 'klaim-barang': App.renderKlaimBarangTable(); break;
+                    case 'budget': App.renderBudgetTable(); break;
+                    case 'master': App.renderMasterTable(); break;
+                    case 'users': App.renderUsersTable(); break;
+                    case 'log-history': App.renderLogHistoryTable(); break;
+                }
+            }
+        };
+
+        const Auth = {
+            init() {
+                const sessionStr = localStorage.getItem('suryatokoku_session');
+                const screen = document.getElementById('login-screen');
+
+                if (sessionStr) {
+                    try {
+                        const session = JSON.parse(sessionStr);
+                        if (session.token) {
+                            screen.classList.add('hidden');
+                            this.updateUserUI(session.user);
+                            CACHE.initCacheData().then(() => Router.init());
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                screen.classList.remove('hidden');
+            },
+
+            checkAuth() {
+                const session = this.getSession();
+                if (!session || !session.token) {
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    return false;
+                }
+                return true;
+            },
+
+            getSession() {
+                try {
+                    return JSON.parse(localStorage.getItem('suryatokoku_session'));
+                } catch (e) {
+                    return null;
+                }
+            },
+
+            getToken() {
+                const s = this.getSession();
+                return s ? s.token : null;
+            },
+
+            getUserRole() {
+                const s = this.getSession();
+                return s && s.user ? s.user.role : 'User';
+            },
+
+            getLoggedInUser() {
+                const s = this.getSession();
+                return s ? s.user : null;
+            },
+
+            async handleLogin(event) {
+                event.preventDefault();
+                const u = document.getElementById('login-username').value.trim();
+                const p = document.getElementById('login-password').value.trim();
+
+                Utils.showLoading('Memverifikasi Login Supabase...');
+
+                try {
+                    let userMatch = null;
+                    if (supabaseClient) {
+                        const { data, error } = await supabaseClient.from('users').select('*').eq('username', u).single();
+                        if (data && !error) {
+                            userMatch = data;
+                        }
+                    }
+
+                    // Native SHA-256 Hash Helper
+                    const msgUint8 = new TextEncoder().encode(p);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                    if (!userMatch) {
+                        // Fallback default admin if new schema
+                        if (u === 'admin' && p === 'admin123') {
+                            userMatch = { username: 'admin', nama_lengkap: 'Administrator System', role: 'Admin', status_aktif: true };
+                        }
+                    } else {
+                        if (userMatch.password_hash !== inputHash) {
+                            Utils.hideLoading();
+                            Utils.showToast('Username atau password salah!', 'error');
+                            return;
+                        }
+                    }
+
+                    if (userMatch) {
+                        if (!userMatch.status_aktif) {
+                            Utils.hideLoading();
+                            Utils.showToast('Akun Anda dinonaktifkan!', 'error');
+                            return;
+                        }
+
+                        const userObj = { username: userMatch.username, nama_lengkap: userMatch.nama_lengkap, role: userMatch.role };
+                        const sessionPayload = { token: 'SUPA-TOKEN-' + Date.now(), user: userObj };
+                        localStorage.setItem('suryatokoku_session', JSON.stringify(sessionPayload));
+
+                        document.getElementById('login-screen').classList.add('hidden');
+                        this.updateUserUI(userObj);
+                        Utils.hideLoading();
+                        Utils.showToast(`Selamat datang, ${userObj.nama_lengkap}!`, 'success');
+
+                        await CACHE.initCacheData();
+                        Router.init();
+                    } else {
+                        Utils.hideLoading();
+                        Utils.showToast('Username atau password tidak terdaftar.', 'error');
+                    }
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal memproses autentikasi: ' + err.message, 'error');
+                }
+            },
+
+            handleLogout() {
+                localStorage.removeItem('suryatokoku_session');
+                window.location.reload();
+            },
+
+            updateUserUI(userObj) {
+                if (!userObj) return;
+                document.getElementById('user-display-name').innerText = userObj.nama_lengkap;
+                document.getElementById('user-display-role').innerText = userObj.role;
+                document.getElementById('user-avatar-initials').innerText = userObj.nama_lengkap.charAt(0).toUpperCase();
+
+                const navUsers = document.getElementById('nav-users');
+                const navLog = document.getElementById('nav-log');
+
+                if (userObj.role === 'Admin') {
+                    if (navUsers) navUsers.classList.remove('hidden');
+                    if (navLog) navLog.classList.remove('hidden');
+                } else {
+                    if (navUsers) navUsers.classList.add('hidden');
+                    if (navLog) navLog.classList.add('hidden');
+                }
+            }
+        };
+
+        const DataTable = {
+            state: {},
+
+            initTableState(key, pageSize = 10) {
+                if (!this.state[key]) {
+                    this.state[key] = { currentPage: 1, pageSize: pageSize };
+                }
+            },
+
+            applyFilterAndSearch(dataArray, filterObj, keyword = '', searchKeys = []) {
+                return dataArray.filter(item => {
+                    for (let fKey in filterObj) {
+                        const targetVal = filterObj[fKey];
+                        if (targetVal && targetVal !== '') {
+                            if (item[fKey] !== targetVal) return false;
+                        }
+                    }
+
+                    if (keyword && keyword.trim() !== '') {
+                        const kw = keyword.toLowerCase().trim();
+                        const match = searchKeys.some(sk => {
+                            const val = item[sk];
+                            return val && val.toString().toLowerCase().includes(kw);
+                        });
+                        if (!match) return false;
+                    }
+
+                    return true;
+                });
+            },
+
+            paginate(dataArray, pageKey) {
+                this.initTableState(pageKey);
+                const st = this.state[pageKey];
+                const totalEntries = dataArray.length;
+                const totalPages = Math.ceil(totalEntries / st.pageSize) || 1;
+
+                if (st.currentPage > totalPages) st.currentPage = totalPages;
+
+                const startIdx = (st.currentPage - 1) * st.pageSize;
+                const endIdx = startIdx + st.pageSize;
+                const pageData = dataArray.slice(startIdx, endIdx);
+
+                return {
+                    pageData,
+                    totalEntries,
+                    totalPages,
+                    currentPage: st.currentPage,
+                    startIdx: totalEntries > 0 ? startIdx + 1 : 0,
+                    endIdx: Math.min(endIdx, totalEntries)
+                };
+            },
+
+            renderPaginationControls(containerId, pageKey, paginatedResult, onPageChange) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                const { totalEntries, totalPages, currentPage, startIdx, endIdx } = paginatedResult;
+
+                let html = `<div>Menampilkan <b>${startIdx}</b> - <b>${endIdx}</b> dari <b>${totalEntries}</b> data</div>`;
+                html += `<div class="flex items-center gap-1">`;
+
+                html += `
+                    <button onclick="DataTable.changePage('${pageKey}', ${currentPage - 1}, ${onPageChange})" 
+                            ${currentPage === 1 ? 'disabled class="px-2 py-1 bg-slate-100 text-slate-300 rounded cursor-not-allowed"' : 'class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded"'}>
+                        <span class="material-symbols-outlined text-sm">chevron_left</span>
+                    </button>
+                `;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                        html += `
+                            <button onclick="DataTable.changePage('${pageKey}', ${i}, ${onPageChange})" 
+                                    class="px-3 py-1 text-xs rounded font-semibold ${i === currentPage ? 'bg-[#D50000] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
+                                ${i}
+                            </button>
+                        `;
+                    } else if (i === currentPage - 2 || i === currentPage + 2) {
+                        html += `<span class="px-1 text-slate-400">...</span>`;
+                    }
+                }
+
+                html += `
+                    <button onclick="DataTable.changePage('${pageKey}', ${currentPage + 1}, ${onPageChange})" 
+                            ${currentPage === totalPages || totalPages === 0 ? 'disabled class="px-2 py-1 bg-slate-100 text-slate-300 rounded cursor-not-allowed"' : 'class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded"'}>
+                        <span class="material-symbols-outlined text-sm">chevron_right</span>
+                    </button>
+                `;
+
+                html += `</div>`;
+                container.innerHTML = html;
+            },
+
+            changePage(pageKey, newPage, callback) {
+                if (newPage < 1) return;
+                this.state[pageKey].currentPage = newPage;
+                if (typeof callback === 'function') callback();
+            }
+        };
+
+        const App = {
+            fileTempStorage: { so: [], si: [] },
+            chartBrand: null,
+            chartBulan: null,
+            activeMasterCategory: 'NAMA_GRUP_BRAND',
+            tomSelectInstances: {},
+
+            init() {
+                Auth.init();
+            },
+
+            applyFilters(type) {
+                if (DataTable.state[type]) {
+                    DataTable.state[type].currentPage = 1;
+                }
+                switch (type) {
+                    case 'sellOut': this.renderSellOutTable(); break;
+                    case 'sellIn': this.renderSellInTable(); break;
+                    case 'klaimBarang': this.renderKlaimBarangTable(); break;
+                    case 'budget': this.renderBudgetTable(); break;
+                }
+            },
+
+            renderDashboard() {
+                const so = CACHE.sellOut;
+                const si = CACHE.sellIn;
+                const kb = CACHE.klaimBarang;
+                const bud = CACHE.budget;
+
+                const totalSoRp = so.reduce((acc, curr) => acc + (Number(curr.nominal_klaim) || 0), 0);
+                const totalSiRp = si.reduce((acc, curr) => acc + (Number(curr.nominal_klaim) || 0), 0);
+                const totalBudRp = bud.reduce((acc, curr) => acc + (Number(curr.nominal_budget) || 0), 0);
+
+                let totalPaidRp = 0;
+                let totalPendingRp = 0;
+
+                [...so, ...si].forEach(item => {
+                    if (item.status_klaim === 'Selesai / Paid') {
+                        totalPaidRp += Number(item.nominal_klaim) || 0;
+                    } else {
+                        totalPendingRp += Number(item.nominal_klaim) || 0;
+                    }
+                });
+
+                document.getElementById('dash-sellout-count').innerText = so.length;
+                document.getElementById('dash-sellout-total').innerText = Utils.formatRupiah(totalSoRp);
+                document.getElementById('dash-sellin-count').innerText = si.length;
+                document.getElementById('dash-sellin-total').innerText = Utils.formatRupiah(totalSiRp);
+                document.getElementById('dash-budget-total').innerText = Utils.formatRupiah(totalBudRp);
+                document.getElementById('dash-budget-count').innerText = `${bud.length} Transaksi`;
+                document.getElementById('dash-klaim-paid').innerText = Utils.formatRupiah(totalPaidRp);
+                document.getElementById('dash-klaim-pending').innerText = Utils.formatRupiah(totalPendingRp);
+
+                this.renderCharts();
+            },
+
+            renderCharts() {
+                const brandMap = {};
+                CACHE.budget.forEach(b => {
+                    const brand = b.nama_brand || 'Unassigned';
+                    brandMap[brand] = (brandMap[brand] || 0) + (Number(b.nominal_budget) || 0);
+                });
+
+                const ctxBrand = document.getElementById('chart-budget-brand')?.getContext('2d');
+                if (ctxBrand) {
+                    if (this.chartBrand) this.chartBrand.destroy();
+                    this.chartBrand = new Chart(ctxBrand, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(brandMap).length ? Object.keys(brandMap) : ['Belum Ada Data'],
+                            datasets: [{
+                                label: 'Nominal Budget (Rp)',
+                                data: Object.keys(brandMap).length ? Object.values(brandMap) : [0],
+                                backgroundColor: '#D50000',
+                                borderRadius: 8
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+
+                const monthMap = {};
+                [...CACHE.sellOut, ...CACHE.sellIn].forEach(item => {
+                    const m = item.periode_bulan || 'Unspecified';
+                    monthMap[m] = (monthMap[m] || 0) + (Number(item.nominal_klaim) || 0);
+                });
+
+                const sortedMonths = Object.keys(monthMap).sort();
+                const ctxBulan = document.getElementById('chart-klaim-bulan')?.getContext('2d');
+                if (ctxBulan) {
+                    if (this.chartBulan) this.chartBulan.destroy();
+                    this.chartBulan = new Chart(ctxBulan, {
+                        type: 'line',
+                        data: {
+                            labels: sortedMonths.length ? sortedMonths : ['Belum Ada Data'],
+                            datasets: [{
+                                label: 'Klaim (Rp)',
+                                data: sortedMonths.length ? sortedMonths.map(k => monthMap[k]) : [0],
+                                borderColor: '#2563EB',
+                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                fill: true,
+                                tension: 0.3
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            },
+
+            renderSellOutTable() {
+                this.populateDropdowns('so');
+                const filters = {
+                    periode_bulan: document.getElementById('filter-so-periode').value,
+                    nama_grup_brand: document.getElementById('filter-so-grup').value,
+                    nama_brand: document.getElementById('filter-so-brand').value,
+                    channel: document.getElementById('filter-so-channel').value,
+                    status_klaim: document.getElementById('filter-so-status').value
+                };
+                const search = document.getElementById('search-sell-out').value;
+
+                const filtered = DataTable.applyFilterAndSearch(CACHE.sellOut, filters, search, ['promo_nama_event', 'nomor_skp', 'nama_brand', 'id']);
+                const paginated = DataTable.paginate(filtered, 'sellOut');
+
+                const tbody = document.getElementById('tbody-sell-out');
+                if (paginated.pageData.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell Out.</td></tr>`;
+                } else {
+                    tbody.innerHTML = paginated.pageData.map((r, index) => {
+                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
+                                <td class="p-3 font-semibold text-slate-800">${Utils.formatPeriodeBulan(r.periode_bulan)}</td>
+                                <td class="p-3">
+                                    <span class="font-semibold text-slate-700">${r.nama_brand}</span>
+                                    <div class="text-[10px] text-slate-400">${r.nama_grup_brand}</div>
+                                </td>
+                                <td class="p-3">
+                                    <div class="font-semibold text-slate-800">${r.promo_nama_event}</div>
+                                    <div class="text-[10px] text-slate-400">SKP: ${r.nomor_skp || '-'}</div>
+                                </td>
+                                <td class="p-3 font-medium">${r.channel}</td>
+                                <td class="p-3 font-medium">${Utils.formatRupiah(r.budget_skp)}</td>
+                                <td class="p-3 font-semibold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-semibold">${r.mekanisme_klaim}</span></td>
+                                <td class="p-3"><span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span></td>
+                                <td class="p-3 text-center">
+                                    <button onclick="App.openModalSellOut('${r.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit"><span class="material-symbols-outlined text-base">edit</span></button>
+                                    <button onclick="App.deleteRecord('sellOut', '${r.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg" title="Hapus"><span class="material-symbols-outlined text-base">delete</span></button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Mobile Card Render
+                const cardsContainer = document.getElementById('cards-sell-out');
+                if (cardsContainer) {
+                    if (paginated.pageData.length === 0) {
+                        cardsContainer.innerHTML = `<div class="card-modern p-6 text-center text-slate-400 text-xs">Tidak ada data Sell Out.</div>`;
+                    } else {
+                        cardsContainer.innerHTML = paginated.pageData.map(r => `
+                            <div class="card-modern p-4 space-y-2">
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                    <span class="font-bold text-slate-800 text-xs">${r.promo_nama_event}</span>
+                                    <span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                    <div><span class="text-slate-400">Periode:</span> <span class="font-semibold">${Utils.formatPeriodeBulan(r.periode_bulan)}</span></div>
+                                    <div><span class="text-slate-400">Channel:</span> <span class="font-semibold">${r.channel}</span></div>
+                                    <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
+                                    <div><span class="text-slate-400">Mekanisme:</span> <span class="font-semibold">${r.mekanisme_klaim}</span></div>
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400">Nominal Klaim</p>
+                                        <p class="font-bold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</p>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="App.openModalSellOut('${r.id}')" class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-semibold">Edit</button>
+                                        <button onclick="App.deleteRecord('sellOut', '${r.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-semibold">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                DataTable.renderPaginationControls('pagination-sell-out', 'sellOut', paginated, () => App.renderSellOutTable());
+                DataTable.renderPaginationControls('pagination-sell-out-mobile', 'sellOut', paginated, () => App.renderSellOutTable());
+            },
+
+            openModalSellOut(id = null) {
+                this.populateDropdowns('so');
+                this.fileTempStorage.so = [];
+
+                if (id) {
+                    const item = CACHE.sellOut.find(x => x.id === id);
+                    if (!item) return;
+                    document.getElementById('modal-so-title').innerText = 'Edit Program Sell Out';
+                    document.getElementById('so-id').value = item.id;
+                    document.getElementById('so-periode').value = Utils.formatMonthValue(item.periode_bulan);
+                    this.setSelectValue('so-channel', item.channel || '');
+                    this.setSelectValue('so-grup', item.nama_grup_brand || '');
+                    this.setSelectValue('so-brand', item.nama_brand || '');
+                    document.getElementById('so-tgl-mulai').value = item.tanggal_mulai || '';
+                    document.getElementById('so-tgl-akhir').value = item.tanggal_berakhir || '';
+                    document.getElementById('so-event').value = item.promo_nama_event || '';
+                    document.getElementById('so-nomor-skp').value = item.nomor_skp || '';
+                    document.getElementById('so-deskripsi').value = item.deskripsi_promo || '';
+                    document.getElementById('so-budget').value = Utils.formatCurrencyValue(item.budget_skp);
+                    document.getElementById('so-nominal-klaim').value = Utils.formatCurrencyValue(item.nominal_klaim);
+                    this.setSelectValue('so-mekanisme', item.mekanisme_klaim || '');
+                    this.setSelectValue('so-metode', item.metode_klaim || '');
+                    this.setSelectValue('so-status', item.status_klaim || '');
+                    document.getElementById('so-tgl-diklaim').value = item.tanggal_diklaim || '';
+
+                    if (Array.isArray(item.files_skp)) {
+                        this.fileTempStorage.so = [...item.files_skp];
+                    }
+                } else {
+                    document.getElementById('form-sell-out').reset();
+                    document.getElementById('modal-so-title').innerText = 'Tambah Program Sell Out';
+                    document.getElementById('so-id').value = '';
+                    ['so-channel', 'so-grup', 'so-brand', 'so-mekanisme', 'so-metode', 'so-status'].forEach(k => this.setSelectValue(k, ''));
+                }
+
+                this.handleMekanismeChange('so');
+                this.renderFileList('so');
+                Utils.openModal('modal-sell-out');
+            },
+
+            async saveSellOut(e) {
+                e.preventDefault();
+                const recordId = document.getElementById('so-id').value || ('SOUT-' + Date.now());
+                const payload = {
+                    id: recordId,
+                    periode_bulan: document.getElementById('so-periode').value,
+                    channel: document.getElementById('so-channel').value,
+                    nama_grup_brand: document.getElementById('so-grup').value,
+                    nama_brand: document.getElementById('so-brand').value,
+                    tanggal_mulai: document.getElementById('so-tgl-mulai').value,
+                    tanggal_berakhir: document.getElementById('so-tgl-akhir').value,
+                    promo_nama_event: document.getElementById('so-event').value,
+                    nomor_skp: document.getElementById('so-nomor-skp').value,
+                    deskripsi_promo: document.getElementById('so-deskripsi').value,
+                    budget_skp: Utils.parseCurrencyValue(document.getElementById('so-budget').value),
+                    nominal_klaim: Utils.parseCurrencyValue(document.getElementById('so-nominal-klaim').value),
+                    mekanisme_klaim: document.getElementById('so-mekanisme').value,
+                    metode_klaim: document.getElementById('so-metode').value,
+                    status_klaim: document.getElementById('so-status').value,
+                    tanggal_diklaim: document.getElementById('so-tgl-diklaim').value,
+                    files_skp: this.fileTempStorage.so,
+                    updated_at: new Date().toISOString()
+                };
+
+                Utils.showLoading('Menyimpan ke Supabase...');
+                try {
+                    const { data, error } = await supabaseClient.from('sell_out').upsert([payload]).select();
+                    if (error) throw error;
+
+                    // If Mekanisme Ganti Produk, sync to Klaim Barang table
+                    if (payload.mekanisme_klaim === 'Ganti Produk') {
+                        const klaimObj = {
+                            id: 'KLM-' + Date.now(),
+                            sumber_program: 'SELL_OUT',
+                            ref_id_program: recordId,
+                            periode_bulan: payload.periode_bulan,
+                            nama_grup_brand: payload.nama_grup_brand,
+                            nama_brand: payload.nama_brand,
+                            files_skp: payload.files_skp,
+                            nomor_skp: payload.nomor_skp,
+                            nominal_klaim: payload.nominal_klaim,
+                            status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
+                            updated_at: new Date().toISOString()
+                        };
+                        await supabaseClient.from('klaim_barang').upsert([klaimObj], { onConflict: 'sumber_program,ref_id_program' });
+                        triggerSheetsBackup('KLAIM_BARANG', 'UPSERT', klaimObj);
+                    }
+
+                    triggerSheetsBackup('SELL_OUT', 'UPSERT', payload);
+                    await logAuditActivity(document.getElementById('so-id').value ? 'UPDATE' : 'CREATE', 'SELL_OUT', recordId, null, payload);
+
+                    Utils.closeModal('modal-sell-out');
+                    Utils.showToast('Program Sell Out berhasil disimpan ke Supabase!', 'success');
+                    await CACHE.refreshCache();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menyimpan: ' + err.message, 'error');
+                }
+            },
+
+            renderSellInTable() {
+                this.populateDropdowns('si');
+                const filters = {
+                    periode_bulan: document.getElementById('filter-si-periode').value,
+                    nama_grup_brand: document.getElementById('filter-si-grup').value,
+                    nama_brand: document.getElementById('filter-si-brand').value,
+                    status_klaim: document.getElementById('filter-si-status').value
+                };
+                const search = document.getElementById('search-sell-in').value;
+
+                const filtered = DataTable.applyFilterAndSearch(CACHE.sellIn, filters, search, ['nama_program', 'nomor_skp', 'nama_brand', 'id']);
+                const paginated = DataTable.paginate(filtered, 'sellIn');
+
+                const tbody = document.getElementById('tbody-sell-in');
+                if (paginated.pageData.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell In.</td></tr>`;
+                } else {
+                    tbody.innerHTML = paginated.pageData.map((r, index) => {
+                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
+                                <td class="p-3 font-semibold text-slate-800">${Utils.formatPeriodeBulan(r.periode_bulan)}</td>
+                                <td class="p-3 font-semibold text-slate-800">${r.nama_program}</td>
+                                <td class="p-3">
+                                    <span class="font-semibold text-slate-700">${r.nama_brand}</span>
+                                    <div class="text-[10px] text-slate-400">${r.nama_grup_brand}</div>
+                                </td>
+                                <td class="p-3 font-medium">${Utils.formatRupiah(r.target)}</td>
+                                <td class="p-3 font-medium">${Utils.formatRupiah(r.cashback)}</td>
+                                <td class="p-3">
+                                    <span class="badge ${r.status_pencapaian === 'Tercapai' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${r.nilai_ach}% (${r.status_pencapaian})</span>
+                                </td>
+                                <td class="p-3 font-semibold text-emerald-600">${Utils.formatRupiah(r.nominal_klaim)}</td>
+                                <td class="p-3"><span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span></td>
+                                <td class="p-3 text-center">
+                                    <button onclick="App.openModalSellIn('${r.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit"><span class="material-symbols-outlined text-base">edit</span></button>
+                                    <button onclick="App.deleteRecord('sellIn', '${r.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg" title="Hapus"><span class="material-symbols-outlined text-base">delete</span></button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Mobile Card Render
+                const cardsContainer = document.getElementById('cards-sell-in');
+                if (cardsContainer) {
+                    if (paginated.pageData.length === 0) {
+                        cardsContainer.innerHTML = `<div class="card-modern p-6 text-center text-slate-400 text-xs">Tidak ada data Sell In.</div>`;
+                    } else {
+                        cardsContainer.innerHTML = paginated.pageData.map(r => `
+                            <div class="card-modern p-4 space-y-2">
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                    <span class="font-bold text-slate-800 text-xs">${r.nama_program}</span>
+                                    <span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                    <div><span class="text-slate-400">Periode:</span> <span class="font-semibold">${Utils.formatPeriodeBulan(r.periode_bulan)}</span></div>
+                                    <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
+                                    <div><span class="text-slate-400">Target:</span> <span class="font-semibold">${Utils.formatRupiah(r.target)}</span></div>
+                                    <div><span class="text-slate-400">ACH:</span> <span class="font-semibold">${r.nilai_ach}%</span></div>
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400">Nominal Klaim</p>
+                                        <p class="font-bold text-emerald-600">${Utils.formatRupiah(r.nominal_klaim)}</p>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="App.openModalSellIn('${r.id}')" class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-semibold">Edit</button>
+                                        <button onclick="App.deleteRecord('sellIn', '${r.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-semibold">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                DataTable.renderPaginationControls('pagination-sell-in', 'sellIn', paginated, () => App.renderSellInTable());
+                DataTable.renderPaginationControls('pagination-sell-in-mobile', 'sellIn', paginated, () => App.renderSellInTable());
+            },
+
+            openModalSellIn(id = null) {
+                this.populateDropdowns('si');
+                this.fileTempStorage.si = [];
+
+                if (id) {
+                    const item = CACHE.sellIn.find(x => x.id === id);
+                    if (!item) return;
+                    document.getElementById('modal-si-title').innerText = 'Edit Program Sell In';
+                    document.getElementById('si-id').value = item.id;
+                    document.getElementById('si-periode').value = Utils.formatMonthValue(item.periode_bulan);
+                    this.setSelectValue('si-nama-program', item.nama_program || '');
+                    this.setSelectValue('si-grup', item.nama_grup_brand || '');
+                    this.setSelectValue('si-brand', item.nama_brand || '');
+                    document.getElementById('si-target').value = Utils.formatCurrencyValue(item.target);
+                    document.getElementById('si-cashback').value = Utils.formatCurrencyValue(item.cashback);
+                    document.getElementById('si-nominal-klaim').value = Utils.formatCurrencyValue(item.nominal_klaim);
+                    document.getElementById('si-ach').value = item.nilai_ach || 0;
+                    this.setSelectValue('si-status-pencapaian', item.status_pencapaian || '');
+                    this.setSelectValue('si-mekanisme', item.mekanisme_klaim || '');
+                    this.setSelectValue('si-metode', item.metode_klaim || '');
+                    this.setSelectValue('si-status', item.status_klaim || '');
+                    document.getElementById('si-keterangan').value = item.keterangan || '';
+
+                    if (Array.isArray(item.files_skp)) {
+                        this.fileTempStorage.si = [...item.files_skp];
+                    }
+                } else {
+                    document.getElementById('form-sell-in').reset();
+                    document.getElementById('modal-si-title').innerText = 'Tambah Program Sell In';
+                    document.getElementById('si-id').value = '';
+                    ['si-nama-program', 'si-grup', 'si-brand', 'si-status-pencapaian', 'si-mekanisme', 'si-metode', 'si-status'].forEach(k => this.setSelectValue(k, ''));
+                }
+
+                this.handleMekanismeChange('si');
+                this.renderFileList('si');
+                Utils.openModal('modal-sell-in');
+            },
+
+            async saveSellIn(e) {
+                e.preventDefault();
+                const recordId = document.getElementById('si-id').value || ('SIN-' + Date.now());
+                const payload = {
+                    id: recordId,
+                    periode_bulan: document.getElementById('si-periode').value,
+                    nama_program: document.getElementById('si-nama-program').value,
+                    nama_grup_brand: document.getElementById('si-grup').value,
+                    nama_brand: document.getElementById('si-brand').value,
+                    target: Utils.parseCurrencyValue(document.getElementById('si-target').value),
+                    cashback: Utils.parseCurrencyValue(document.getElementById('si-cashback').value),
+                    nominal_klaim: Utils.parseCurrencyValue(document.getElementById('si-nominal-klaim').value),
+                    nilai_ach: Number(document.getElementById('si-ach').value) || 0,
+                    status_pencapaian: document.getElementById('si-status-pencapaian').value,
+                    mekanisme_klaim: document.getElementById('si-mekanisme').value,
+                    metode_klaim: document.getElementById('si-metode').value,
+                    status_klaim: document.getElementById('si-status').value,
+                    keterangan: document.getElementById('si-keterangan').value,
+                    files_skp: this.fileTempStorage.si,
+                    updated_at: new Date().toISOString()
+                };
+
+                Utils.showLoading('Menyimpan Program Sell In...');
+                try {
+                    const { data, error } = await supabaseClient.from('sell_in').upsert([payload]).select();
+                    if (error) throw error;
+
+                    if (payload.mekanisme_klaim === 'Ganti Produk') {
+                        const klaimObj = {
+                            id: 'KLM-' + Date.now(),
+                            sumber_program: 'SELL_IN',
+                            ref_id_program: recordId,
+                            periode_bulan: payload.periode_bulan,
+                            nama_grup_brand: payload.nama_grup_brand,
+                            nama_brand: payload.nama_brand,
+                            files_skp: payload.files_skp,
+                            nomor_skp: payload.nomor_skp || '',
+                            nominal_klaim: payload.nominal_klaim,
+                            status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
+                            updated_at: new Date().toISOString()
+                        };
+                        await supabaseClient.from('klaim_barang').upsert([klaimObj], { onConflict: 'sumber_program,ref_id_program' });
+                        triggerSheetsBackup('KLAIM_BARANG', 'UPSERT', klaimObj);
+                    }
+
+                    triggerSheetsBackup('SELL_IN', 'UPSERT', payload);
+                    await logAuditActivity(document.getElementById('si-id').value ? 'UPDATE' : 'CREATE', 'SELL_IN', recordId, null, payload);
+
+                    Utils.closeModal('modal-sell-in');
+                    Utils.showToast('Program Sell In berhasil disimpan!', 'success');
+                    await CACHE.refreshCache();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menyimpan: ' + err.message, 'error');
+                }
+            },
+
+            handleMekanismeChange(prefix) {
+                const mekaSelect = document.getElementById(`${prefix}-mekanisme`);
+                const statusSelect = document.getElementById(`${prefix}-status`);
+                const hint = document.getElementById(`${prefix}-status-hint`);
+
+                if (!mekaSelect || !statusSelect) return;
+
+                if (mekaSelect.value === 'Ganti Produk') {
+                    statusSelect.disabled = true;
+                    statusSelect.classList.add('opacity-60', 'cursor-not-allowed', 'bg-slate-200');
+                    if (hint) hint.classList.remove('hidden');
+                } else {
+                    statusSelect.disabled = false;
+                    statusSelect.classList.remove('opacity-60', 'cursor-not-allowed', 'bg-slate-200');
+                    if (hint) hint.classList.add('hidden');
+                }
+            },
+
+            renderKlaimBarangTable() {
+                this.populateDropdowns('kb');
+                const filters = {
+                    periode_bulan: document.getElementById('filter-kb-periode').value,
+                    nama_grup_brand: document.getElementById('filter-kb-grup').value,
+                    nama_brand: document.getElementById('filter-kb-brand').value,
+                    status_klaim: document.getElementById('filter-kb-status').value
+                };
+                const search = document.getElementById('search-klaim-barang').value;
+
+                const filtered = DataTable.applyFilterAndSearch(CACHE.klaimBarang, filters, search, ['ref_id_program', 'nomor_po_csa', 'nomor_skp', 'nama_brand', 'id']);
+                const paginated = DataTable.paginate(filtered, 'klaimBarang');
+
+                const tbody = document.getElementById('tbody-klaim-barang');
+                if (paginated.pageData.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400">Tidak ada data klaim barang (Ganti Produk).</td></tr>`;
+                } else {
+                    tbody.innerHTML = paginated.pageData.map((r, index) => {
+                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        const filesList = Array.isArray(r.files_skp) ? r.files_skp : [];
+                        const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
+
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
+                                <td class="p-3">
+                                    <span class="font-bold text-slate-800">${r.sumber_program}</span>
+                                    <div class="text-[10px] text-slate-400">Periode: ${Utils.formatPeriodeBulan(r.periode_bulan)}</div>
+                                </td>
+                                <td class="p-3">
+                                    <span class="font-semibold text-slate-700">${r.nama_brand}</span>
+                                    <div class="text-[10px] text-slate-400">${r.nama_grup_brand}</div>
+                                </td>
+                                <td class="p-3">
+                                    <div class="font-semibold text-slate-800">${r.nomor_skp || '-'}</div>
+                                    <div class="text-[10px] space-y-0.5">${fileLinks || '<span class="text-slate-400">-</span>'}</div>
+                                </td>
+                                <td class="p-3 font-semibold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</td>
+                                <td class="p-3 font-medium">${Utils.formatRupiah(r.nominal_het)}</td>
+                                <td class="p-3 font-medium">${Utils.formatRupiah(r.nominal_hpp)}</td>
+                                <td class="p-3 font-bold ${r.selisih < 0 ? 'text-red-600' : 'text-slate-700'}">${Utils.formatRupiah(r.selisih)}</td>
+                                <td class="p-3 font-mono font-semibold">${r.nomor_po_csa || '-'}</td>
+                                <td class="p-3"><span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span></td>
+                                <td class="p-3 text-center">
+                                    <button onclick="App.openModalKlaimBarang('${r.id}')" class="px-2.5 py-1 bg-red-50 text-[#D50000] hover:bg-red-100 rounded-lg font-semibold flex items-center gap-1 mx-auto" title="Update Details & Sync Status">
+                                        <span class="material-symbols-outlined text-sm">edit</span> Update
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Mobile Cards Render
+                const cardsContainer = document.getElementById('cards-klaim-barang');
+                if (cardsContainer) {
+                    if (paginated.pageData.length === 0) {
+                        cardsContainer.innerHTML = `<div class="card-modern p-6 text-center text-slate-400 text-xs">Tidak ada data Klaim Barang.</div>`;
+                    } else {
+                        cardsContainer.innerHTML = paginated.pageData.map(r => `
+                            <div class="card-modern p-4 space-y-2">
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                    <div>
+                                        <span class="font-bold text-slate-800 text-xs">${r.sumber_program}</span>
+                                        <p class="text-[10px] text-slate-400">SKP: ${r.nomor_skp || '-'}</p>
+                                    </div>
+                                    <span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                    <div><span class="text-slate-400">Periode:</span> <span class="font-semibold">${Utils.formatPeriodeBulan(r.periode_bulan)}</span></div>
+                                    <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
+                                    <div><span class="text-slate-400">Nominal HET:</span> <span class="font-semibold">${Utils.formatRupiah(r.nominal_het)}</span></div>
+                                    <div><span class="text-slate-400">PO CSA:</span> <span class="font-semibold">${r.nomor_po_csa || '-'}</span></div>
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400">Nominal Klaim</p>
+                                        <p class="font-bold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</p>
+                                    </div>
+                                    <button onclick="App.openModalKlaimBarang('${r.id}')" class="px-3 py-1.5 bg-[#D50000] text-white rounded-lg font-semibold text-xs">Update Klaim</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                DataTable.renderPaginationControls('pagination-klaim-barang', 'klaimBarang', paginated, () => App.renderKlaimBarangTable());
+                DataTable.renderPaginationControls('pagination-klaim-barang-mobile', 'klaimBarang', paginated, () => App.renderKlaimBarangTable());
+            },
+
+            openModalKlaimBarang(id) {
+                this.populateDropdowns('kb');
+                const item = CACHE.klaimBarang.find(x => x.id === id);
+                if (!item) return;
+
+                document.getElementById('kb-id').value = item.id;
+                document.getElementById('kb-sumber-lbl').innerText = item.sumber_program || '-';
+                document.getElementById('kb-ref-id-lbl').innerText = item.ref_id_program || '-';
+                document.getElementById('kb-brand-lbl').innerText = `${item.nama_brand} (${item.nama_grup_brand})`;
+                document.getElementById('kb-nominal-klaim-lbl').innerText = Utils.formatRupiah(item.nominal_klaim);
+                document.getElementById('kb-nominal-klaim-val').value = item.nominal_klaim || 0;
+
+                document.getElementById('kb-nominal-het').value = Utils.formatCurrencyValue(item.nominal_het);
+                document.getElementById('kb-nominal-hpp').value = Utils.formatCurrencyValue(item.nominal_hpp);
+                document.getElementById('kb-nomor-po-csa').value = item.nomor_po_csa || '';
+                this.setSelectValue('kb-status', item.status_klaim || '');
+
+                this.calculateKlaimSelisih();
+                Utils.openModal('modal-klaim-barang');
+            },
+
+            calculateKlaimSelisih() {
+                const het = Utils.parseCurrencyValue(document.getElementById('kb-nominal-het').value);
+                const klaim = Number(document.getElementById('kb-nominal-klaim-val').value) || 0;
+                const selisih = het - klaim;
+                document.getElementById('kb-selisih-lbl').innerText = Utils.formatRupiah(selisih);
+            },
+
+            async saveKlaimBarang(e) {
+                e.preventDefault();
+                const kbId = document.getElementById('kb-id').value;
+                const item = CACHE.klaimBarang.find(x => x.id === kbId);
+                if (!item) return;
+
+                const het = Utils.parseCurrencyValue(document.getElementById('kb-nominal-het').value);
+                const hpp = Utils.parseCurrencyValue(document.getElementById('kb-nominal-hpp').value);
+                const selisih = het - (Number(item.nominal_klaim) || 0);
+                const newStatus = document.getElementById('kb-status').value;
+
+                const payload = {
+                    id: kbId,
+                    nominal_het: het,
+                    nominal_hpp: hpp,
+                    selisih: selisih,
+                    nomor_po_csa: document.getElementById('kb-nomor-po-csa').value,
+                    status_klaim: newStatus,
+                    updated_at: new Date().toISOString()
+                };
+
+                Utils.showLoading('Meng-update Klaim Barang...');
+                try {
+                    const { error } = await supabaseClient.from('klaim_barang').update(payload).eq('id', kbId);
+                    if (error) throw error;
+
+                    // Sync status back to main program (Sell Out / Sell In)
+                    if (item.sumber_program === 'SELL_OUT') {
+                        await supabaseClient.from('sell_out').update({ status_klaim: newStatus, updated_at: new Date().toISOString() }).eq('id', item.ref_id_program);
+                    } else if (item.sumber_program === 'SELL_IN') {
+                        await supabaseClient.from('sell_in').update({ status_klaim: newStatus, updated_at: new Date().toISOString() }).eq('id', item.ref_id_program);
+                    }
+
+                    triggerSheetsBackup('KLAIM_BARANG', 'UPSERT', { ...item, ...payload });
+                    await logAuditActivity('UPDATE', 'KLAIM_BARANG', kbId, item, payload);
+
+                    Utils.closeModal('modal-klaim-barang');
+                    Utils.showToast('Klaim Barang & Status Program berhasil diperbarui!', 'success');
+                    await CACHE.refreshCache();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal meng-update: ' + err.message, 'error');
+                }
+            },
+
+            renderBudgetTable() {
+                this.populateDropdowns('bud');
+                const filters = {
+                    periode_bulan: document.getElementById('filter-bud-periode').value,
+                    nama_grup_brand: document.getElementById('filter-bud-grup').value,
+                    nama_brand: document.getElementById('filter-bud-brand').value
+                };
+                const search = document.getElementById('search-budget').value;
+
+                const filtered = DataTable.applyFilterAndSearch(CACHE.budget, filters, search, ['pemakaian_budget', 'nama_brand', 'id']);
+                const paginated = DataTable.paginate(filtered, 'budget');
+
+                const tbody = document.getElementById('tbody-budget');
+                if (paginated.pageData.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">Tidak ada data pemakaian budget.</td></tr>`;
+                } else {
+                    tbody.innerHTML = paginated.pageData.map((r, index) => {
+                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
+                                <td class="p-3">
+                                    <span class="font-semibold text-slate-800">${Utils.formatDate(r.tanggal_pemakaian)}</span>
+                                    <div class="text-[10px] text-slate-400">Periode: ${Utils.formatPeriodeBulan(r.periode_bulan)}</div>
+                                </td>
+                                <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-semibold">${r.sumber_program} (${r.ref_id_program || 'Manual'})</span></td>
+                                <td class="p-3">
+                                    <span class="font-semibold text-slate-700">${r.nama_brand}</span>
+                                    <div class="text-[10px] text-slate-400">${r.nama_grup_brand}</div>
+                                </td>
+                                <td class="p-3 font-medium">${r.channel || '-'}</td>
+                                <td class="p-3 font-bold text-amber-600">${Utils.formatRupiah(r.nominal_budget)}</td>
+                                <td class="p-3 max-w-xs truncate">${r.pemakaian_budget}</td>
+                                <td class="p-3"><span class="badge ${CONFIG.BADGE_COLORS[r.status_pemakaian] || 'bg-slate-100'}">${r.status_pemakaian}</span></td>
+                                <td class="p-3 text-center">
+                                    <button onclick="App.openModalBudget('${r.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><span class="material-symbols-outlined text-base">edit</span></button>
+                                    <button onclick="App.deleteRecord('budget', '${r.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"><span class="material-symbols-outlined text-base">delete</span></button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Mobile Card Render
+                const cardsContainer = document.getElementById('cards-budget');
+                if (cardsContainer) {
+                    if (paginated.pageData.length === 0) {
+                        cardsContainer.innerHTML = `<div class="card-modern p-6 text-center text-slate-400 text-xs">Tidak ada data Budget.</div>`;
+                    } else {
+                        cardsContainer.innerHTML = paginated.pageData.map(r => `
+                            <div class="card-modern p-4 space-y-2">
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                    <span class="font-bold text-slate-800 text-xs">${r.pemakaian_budget}</span>
+                                    <span class="badge ${CONFIG.BADGE_COLORS[r.status_pemakaian] || 'bg-slate-100'}">${r.status_pemakaian}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                    <div><span class="text-slate-400">Tanggal:</span> <span class="font-semibold">${Utils.formatDate(r.tanggal_pemakaian)}</span></div>
+                                    <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400">Nominal Budget</p>
+                                        <p class="font-bold text-amber-600">${Utils.formatRupiah(r.nominal_budget)}</p>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="App.openModalBudget('${r.id}')" class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-semibold">Edit</button>
+                                        <button onclick="App.deleteRecord('budget', '${r.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-semibold">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                DataTable.renderPaginationControls('pagination-budget', 'budget', paginated, () => App.renderBudgetTable());
+                DataTable.renderPaginationControls('pagination-budget-mobile', 'budget', paginated, () => App.renderBudgetTable());
+            },
+
+            openModalBudget(id = null) {
+                this.populateDropdowns('bud');
+
+                const refSelect = document.getElementById('bud-ref-program');
+                if (refSelect) {
+                    let opts = ['<option value="">-- Pilih Program --</option>'];
+                    CACHE.sellOut.forEach(item => {
+                        opts.push(`<option value="SOUT|${item.id}">Sell Out: ${item.id} - ${item.promo_nama_event}</option>`);
+                    });
+                    CACHE.sellIn.forEach(item => {
+                        opts.push(`<option value="SIN|${item.id}">Sell In: ${item.id} - ${item.nama_program}</option>`);
+                    });
+                    refSelect.innerHTML = opts.join('');
+                }
+
+                if (id) {
+                    const item = CACHE.budget.find(x => x.id === id);
+                    if (!item) return;
+                    document.getElementById('bud-id').value = item.id;
+                    document.getElementById('bud-periode').value = Utils.formatMonthValue(item.periode_bulan);
+                    this.setSelectValue('bud-channel', item.channel || '');
+                    this.setSelectValue('bud-grup', item.nama_grup_brand || '');
+                    this.setSelectValue('bud-brand', item.nama_brand || '');
+                    document.getElementById('bud-nominal').value = Utils.formatCurrencyValue(item.nominal_budget);
+                    document.getElementById('bud-tgl-pemakaian').value = item.tanggal_pemakaian || '';
+                    document.getElementById('bud-keterangan').value = item.pemakaian_budget || '';
+                    this.setSelectValue('bud-status', item.status_pemakaian || '');
+
+                    const isRef = item.sumber_program && item.sumber_program !== 'MANUAL';
+                    document.querySelectorAll('input[name="bud-source-type"]').forEach(r => {
+                        r.checked = (r.value === (isRef ? 'REF' : 'MANUAL'));
+                    });
+                    this.toggleBudgetSourceMode(isRef ? 'REF' : 'MANUAL');
+                } else {
+                    document.getElementById('form-budget').reset();
+                    document.getElementById('bud-id').value = '';
+                    ['bud-channel', 'bud-grup', 'bud-brand', 'bud-status'].forEach(k => this.setSelectValue(k, ''));
+                    this.toggleBudgetSourceMode('REF');
+                }
+
+                Utils.openModal('modal-budget');
+            },
+
+            toggleBudgetSourceMode(mode) {
+                const secRef = document.getElementById('bud-sec-ref');
+                if (secRef) {
+                    if (mode === 'REF') secRef.classList.remove('hidden');
+                    else secRef.classList.add('hidden');
+                }
+            },
+
+            handleBudgetProgramSelect() {
+                const val = document.getElementById('bud-ref-program').value;
+                if (!val) return;
+
+                const [type, id] = val.split('|');
+                if (type === 'SOUT') {
+                    const item = CACHE.sellOut.find(x => x.id === id);
+                    if (item) {
+                        document.getElementById('bud-periode').value = Utils.formatMonthValue(item.periode_bulan);
+                        this.setSelectValue('bud-grup', item.nama_grup_brand || '');
+                        this.setSelectValue('bud-brand', item.nama_brand || '');
+                        this.setSelectValue('bud-channel', item.channel || '');
+                        document.getElementById('bud-nominal').value = Utils.formatCurrencyValue(item.budget_skp);
+                        document.getElementById('bud-keterangan').value = item.promo_nama_event || '';
+                    }
+                } else if (type === 'SIN') {
+                    const item = CACHE.sellIn.find(x => x.id === id);
+                    if (item) {
+                        document.getElementById('bud-periode').value = Utils.formatMonthValue(item.periode_bulan);
+                        this.setSelectValue('bud-grup', item.nama_grup_brand || '');
+                        this.setSelectValue('bud-brand', item.nama_brand || '');
+                        document.getElementById('bud-nominal').value = Utils.formatCurrencyValue(item.cashback);
+                        document.getElementById('bud-keterangan').value = item.nama_program || '';
+                    }
+                }
+            },
+
+            async saveBudget(e) {
+                e.preventDefault();
+                const sourceType = document.querySelector('input[name="bud-source-type"]:checked')?.value || 'MANUAL';
+                const refVal = document.getElementById('bud-ref-program').value;
+
+                let refId = '';
+                let sumberProg = 'MANUAL';
+
+                if (sourceType === 'REF' && refVal) {
+                    const parts = refVal.split('|');
+                    sumberProg = parts[0] === 'SOUT' ? 'SELL_OUT' : 'SELL_IN';
+                    refId = parts[1];
+                }
+
+                const recordId = document.getElementById('bud-id').value || ('BUD-' + Date.now());
+                const payload = {
+                    id: recordId,
+                    sumber_program: sumberProg,
+                    ref_id_program: refId,
+                    periode_bulan: document.getElementById('bud-periode').value,
+                    channel: document.getElementById('bud-channel').value,
+                    nama_grup_brand: document.getElementById('bud-grup').value,
+                    nama_brand: document.getElementById('bud-brand').value,
+                    nominal_budget: Utils.parseCurrencyValue(document.getElementById('bud-nominal').value),
+                    tanggal_pemakaian: document.getElementById('bud-tgl-pemakaian').value,
+                    pemakaian_budget: document.getElementById('bud-keterangan').value,
+                    status_pemakaian: document.getElementById('bud-status').value,
+                    updated_at: new Date().toISOString()
+                };
+
+                Utils.showLoading('Menyimpan Data Pemakaian Budget...');
+                try {
+                    const { error } = await supabaseClient.from('pemakaian_budget').upsert([payload]);
+                    if (error) throw error;
+
+                    triggerSheetsBackup('PEMAKAIAN_BUDGET', 'UPSERT', payload);
+                    await logAuditActivity(document.getElementById('bud-id').value ? 'UPDATE' : 'CREATE', 'PEMAKAIAN_BUDGET', recordId, null, payload);
+
+                    Utils.closeModal('modal-budget');
+                    Utils.showToast('Data Budget berhasil disimpan ke Supabase!', 'success');
+                    await CACHE.refreshCache();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menyimpan: ' + err.message, 'error');
+                }
+            },
+
+            async handleFileUpload(e, prefix) {
+                const files = e.target.files;
+                if (!files || files.length === 0) return;
+
+                Utils.showLoading('Membaca file...');
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    try {
+                        const base64 = await Utils.fileToBase64(file);
+                        this.fileTempStorage[prefix].push({
+                            fileId: 'FILE-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                            fileName: file.name,
+                            fileUrl: base64,
+                            mimeType: file.type
+                        });
+                    } catch (err) {
+                        Utils.showToast(`Gagal membaca ${file.name}: ${err.message}`, 'error');
+                    }
+                }
+                Utils.hideLoading();
+                this.renderFileList(prefix);
+                e.target.value = '';
+            },
+
+            renderFileList(prefix) {
+                const container = document.getElementById(`${prefix}-files-list`);
+                if (!container) return;
+
+                const files = this.fileTempStorage[prefix] || [];
+                if (files.length === 0) {
+                    container.innerHTML = `<p class="text-[11px] text-slate-400 italic">Belum ada file diunggah.</p>`;
+                    return;
+                }
+
+                container.innerHTML = files.map((f, index) => `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs">
+                        <div class="flex items-center gap-2 truncate flex-1">
+                            <span class="material-symbols-outlined text-red-600 text-base">description</span>
+                            <span class="font-semibold text-slate-700 truncate">${f.fileName}</span>
+                        </div>
+                        <button type="button" onclick="App.deleteFile('${prefix}', ${index})" class="text-slate-400 hover:text-red-600 p-1" title="Hapus File">
+                            <span class="material-symbols-outlined text-base">close</span>
+                        </button>
+                    </div>
+                `).join('');
+            },
+
+            deleteFile(prefix, index) {
+                if (this.fileTempStorage[prefix]) {
+                    this.fileTempStorage[prefix].splice(index, 1);
+                    this.renderFileList(prefix);
+                }
+            },
+
+            renderMasterTable() {
+                const tabsContainer = document.getElementById('master-category-tabs');
+                if (tabsContainer) {
+                    const catLabels = {
+                        'NAMA_GRUP_BRAND': 'Nama Grup Brand',
+                        'NAMA_BRAND': 'Nama Brand',
+                        'CHANNEL': 'Channel',
+                        'MEKANISME_KLAIM': 'Mekanisme Klaim',
+                        'METODE_KLAIM': 'Metode Klaim',
+                        'STATUS_KLAIM': 'Status Klaim',
+                        'STATUS_PENCAPAIAN': 'Status Pencapaian',
+                        'NAMA_PROGRAM': 'Nama Program',
+                        'STATUS_PEMAKAIAN_BUDGET': 'Status Pemakaian Budget'
+                    };
+
+                    tabsContainer.innerHTML = CONFIG.MASTER_KEYS.map(k => `
+                        <button type="button" onclick="App.setMasterCategory('${k}')" 
+                                class="px-3 py-1.5 rounded-xl text-xs font-semibold transition ${App.activeMasterCategory === k ? 'bg-[#D50000] text-white shadow-md shadow-red-500/20' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
+                            ${catLabels[k] || k}
+                        </button>
+                    `).join('');
+                }
+
+                const activeTitle = document.getElementById('master-active-cat-title');
+                if (activeTitle) {
+                    activeTitle.innerText = `Master: ${App.activeMasterCategory.replace(/_/g, ' ')}`;
+                }
+
+                const items = CACHE.masterRaw.filter(x => x.kategori === App.activeMasterCategory);
+                const tbody = document.getElementById('tbody-master');
+                if (!tbody) return;
+
+                if (items.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Belum ada item master untuk kategori ini.</td></tr>`;
+                } else {
+                    tbody.innerHTML = items.map((m, index) => `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="p-3 text-center text-slate-400 font-medium">${index + 1}</td>
+                            <td class="p-3 font-semibold text-slate-700">${m.kategori}</td>
+                            <td class="p-3 font-bold text-slate-800">${m.nilai}</td>
+                            <td class="p-3"><span class="badge ${m.status_aktif ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${m.status_aktif ? 'Aktif' : 'Non-Aktif'}</span></td>
+                            <td class="p-3 text-center">
+                                <button onclick="App.openModalMaster('${m.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit"><span class="material-symbols-outlined text-base">edit</span></button>
+                                <button onclick="App.deleteMasterItem('${m.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg" title="Hapus"><span class="material-symbols-outlined text-base">delete</span></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            },
+
+            setMasterCategory(catKey) {
+                this.activeMasterCategory = catKey;
+                this.renderMasterTable();
+            },
+
+            populateDropdowns(prefix) {
+                const populate = (elemId, categoryKey, placeholder = '-- Pilih --') => {
+                    const el = document.getElementById(elemId);
+                    if (!el) return;
+
+                    if (this.tomSelectInstances[elemId]) {
+                        try { this.tomSelectInstances[elemId].destroy(); } catch (e) {}
+                        delete this.tomSelectInstances[elemId];
+                    }
+
+                    const curVal = el.value;
+                    const items = CACHE.master[categoryKey] || [];
+                    const opts = [`<option value="">${placeholder}</option>`, ...items.map(i => `<option value="${i.nilai}">${i.nilai}</option>`)];
+                    
+                    if (!elemId.startsWith('filter-')) {
+                        opts.push(`<option value="__ADD_NEW__" class="font-bold text-[#D50000]">➕ + Tambah Item Baru...</option>`);
+                    }
+
+                    el.innerHTML = opts.join('');
+                    if (curVal) el.value = curVal;
+
+                    const isFormMasterField = !elemId.startsWith('filter-') && !elemId.includes('status');
+
+                    if (isFormMasterField) {
+                        const ts = new TomSelect(el, {
+                            create: false,
+                            maxItems: 1,
+                            placeholder: placeholder,
+                            allowEmptyOption: true,
+                            controlInput: null,
+                            plugins: ['dropdown_input'],
+                            onChange: (val) => {
+                                if (val === '__ADD_NEW__') {
+                                    ts.setValue('', true);
+                                    this.openQuickAddMaster(categoryKey, elemId);
+                                } else if (elemId.endsWith('-mekanisme')) {
+                                    const pfx = elemId.split('-')[0];
+                                    this.handleMekanismeChange(pfx);
+                                }
+                            }
+                        });
+                        this.tomSelectInstances[elemId] = ts;
+                    } else {
+                        el.onchange = (e) => {
+                            if (elemId.startsWith('filter-')) {
+                                const typeMap = { 'so': 'sellOut', 'si': 'sellIn', 'kb': 'klaimBarang', 'bud': 'budget' };
+                                App.applyFilters(typeMap[prefix] || prefix);
+                            } else if (e.target.value === '__ADD_NEW__') {
+                                el.value = curVal || '';
+                                this.openQuickAddMaster(categoryKey, elemId);
+                            } else if (elemId.endsWith('-mekanisme')) {
+                                const pfx = elemId.split('-')[0];
+                                this.handleMekanismeChange(pfx);
+                            }
+                        };
+                    }
+                };
+
+                if (prefix === 'so') {
+                    populate('so-grup', 'NAMA_GRUP_BRAND');
+                    populate('so-brand', 'NAMA_BRAND');
+                    populate('so-channel', 'CHANNEL');
+                    populate('so-mekanisme', 'MEKANISME_KLAIM');
+                    populate('so-metode', 'METODE_KLAIM');
+                    populate('so-status', 'STATUS_KLAIM');
+                    populate('filter-so-grup', 'NAMA_GRUP_BRAND', '-- Semua Grup --');
+                    populate('filter-so-brand', 'NAMA_BRAND', '-- Semua Brand --');
+                    populate('filter-so-channel', 'CHANNEL', '-- Semua Channel --');
+                    populate('filter-so-status', 'STATUS_KLAIM', '-- Semua Status --');
+                } else if (prefix === 'si') {
+                    populate('si-nama-program', 'NAMA_PROGRAM');
+                    populate('si-grup', 'NAMA_GRUP_BRAND');
+                    populate('si-brand', 'NAMA_BRAND');
+                    populate('si-status-pencapaian', 'STATUS_PENCAPAIAN');
+                    populate('si-mekanisme', 'MEKANISME_KLAIM');
+                    populate('si-metode', 'METODE_KLAIM');
+                    populate('si-status', 'STATUS_KLAIM');
+                    populate('filter-si-grup', 'NAMA_GRUP_BRAND', '-- Semua Grup --');
+                    populate('filter-si-brand', 'NAMA_BRAND', '-- Semua Brand --');
+                    populate('filter-si-status', 'STATUS_KLAIM', '-- Semua Status --');
+                } else if (prefix === 'kb') {
+                    populate('kb-status', 'STATUS_KLAIM');
+                    populate('filter-kb-grup', 'NAMA_GRUP_BRAND', '-- Semua Grup --');
+                    populate('filter-kb-brand', 'NAMA_BRAND', '-- Semua Brand --');
+                    populate('filter-kb-status', 'STATUS_KLAIM', '-- Semua Status --');
+                } else if (prefix === 'bud') {
+                    populate('bud-grup', 'NAMA_GRUP_BRAND');
+                    populate('bud-brand', 'NAMA_BRAND');
+                    populate('bud-channel', 'CHANNEL');
+                    populate('bud-status', 'STATUS_PEMAKAIAN_BUDGET');
+                    populate('filter-bud-grup', 'NAMA_GRUP_BRAND', '-- Semua Grup --');
+                    populate('filter-bud-brand', 'NAMA_BRAND', '-- Semua Brand --');
+                }
+            },
+
+            setSelectValue(elemId, val) {
+                const el = document.getElementById(elemId);
+                if (!el) return;
+                el.value = val || '';
+                if (this.tomSelectInstances[elemId]) {
+                    this.tomSelectInstances[elemId].setValue(val || '', true);
+                }
+            },
+
+            openQuickAddMaster(kategoriKey, targetSelectId) {
+                const catLabels = {
+                    'NAMA_GRUP_BRAND': 'Nama Grup Brand',
+                    'NAMA_BRAND': 'Nama Brand',
+                    'CHANNEL': 'Channel',
+                    'MEKANISME_KLAIM': 'Mekanisme Klaim',
+                    'METODE_KLAIM': 'Metode Klaim',
+                    'STATUS_KLAIM': 'Status Klaim',
+                    'STATUS_PENCAPAIAN': 'Status Pencapaian',
+                    'NAMA_PROGRAM': 'Nama Program',
+                    'STATUS_PEMAKAIAN_BUDGET': 'Status Pemakaian Budget'
+                };
+
+                document.getElementById('quick-add-kategori').value = kategoriKey;
+                document.getElementById('quick-add-target-select-id').value = targetSelectId;
+                document.getElementById('quick-add-nilai').value = '';
+                document.getElementById('quick-add-title').innerText = `Tambah Master Baru`;
+                document.getElementById('quick-add-label-category').innerText = `Opsi Baru (${catLabels[kategoriKey] || kategoriKey}) *`;
+
+                Utils.openModal('modal-quick-add-master');
+            },
+
+            async saveQuickMasterItem(e) {
+                e.preventDefault();
+                const kategori = document.getElementById('quick-add-kategori').value;
+                const targetSelectId = document.getElementById('quick-add-target-select-id').value;
+                const nilai = document.getElementById('quick-add-nilai').value.trim();
+
+                if (!nilai) return;
+
+                const newId = 'MST-' + Date.now();
+                const payload = { id: newId, kategori, nilai, urutan: 1, status_aktif: true };
+
+                Utils.showLoading('Menambahkan item master...');
+                try {
+                    const { error } = await supabaseClient.from('master').insert([payload]);
+                    if (error) throw error;
+
+                    triggerSheetsBackup('MASTER', 'UPSERT', payload);
+                    await logAuditActivity('CREATE', 'SETTING_MASTER', newId, null, payload);
+
+                    Utils.closeModal('modal-quick-add-master');
+                    Utils.showToast(`Item "${nilai}" berhasil ditambahkan!`, 'success');
+
+                    CACHE.masterRaw.push(payload);
+                    CACHE.processMasterGroup(CACHE.masterRaw);
+
+                    const prefix = targetSelectId.split('-')[0];
+                    this.populateDropdowns(prefix);
+                    this.setSelectValue(targetSelectId, nilai);
+                    Utils.hideLoading();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menyimpan master: ' + err.message, 'error');
+                }
+            },
+
+            openModalMaster(id = null) {
+                if (id) {
+                    const item = CACHE.masterRaw.find(x => x.id === id);
+                    if (!item) return;
+                    document.getElementById('mst-id').value = item.id;
+                    document.getElementById('mst-kategori').value = item.kategori;
+                    document.getElementById('mst-nilai').value = item.nilai;
+                    document.getElementById('mst-aktif').checked = item.status_aktif;
+                } else {
+                    document.getElementById('form-master').reset();
+                    document.getElementById('mst-id').value = '';
+                    document.getElementById('mst-kategori').value = this.activeMasterCategory;
+                }
+                Utils.openModal('modal-master');
+            },
+
+            async saveMasterItem(e) {
+                e.preventDefault();
+                const newId = document.getElementById('mst-id').value || ('MST-' + Date.now());
+                const payload = {
+                    id: newId,
+                    kategori: document.getElementById('mst-kategori').value,
+                    nilai: document.getElementById('mst-nilai').value,
+                    urutan: 1,
+                    status_aktif: document.getElementById('mst-aktif').checked
+                };
+
+                Utils.showLoading('Menyimpan ke Supabase...');
+                try {
+                    const { error } = await supabaseClient.from('master').upsert([payload]);
+                    if (error) throw error;
+
+                    triggerSheetsBackup('MASTER', 'UPSERT', payload);
+                    await logAuditActivity('UPDATE', 'SETTING_MASTER', newId, null, payload);
+
+                    Utils.closeModal('modal-master');
+                    Utils.showToast('Master data berhasil disimpan!', 'success');
+                    await CACHE.refreshCache();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menyimpan master: ' + err.message, 'error');
+                }
+            },
+
+            async deleteMasterItem(id) {
+                Utils.showLoading('Menghapus item master...');
+                try {
+                    const { error } = await supabaseClient.from('master').delete().eq('id', id);
+                    if (error) throw error;
+
+                    triggerSheetsBackup('MASTER', 'DELETE', { id });
+                    await logAuditActivity('DELETE', 'SETTING_MASTER', id, null, null);
+
+                    CACHE.masterRaw = CACHE.masterRaw.filter(x => String(x.id).trim() !== String(id).trim());
+                    CACHE.processMasterGroup(CACHE.masterRaw);
+                    this.renderMasterTable();
+
+                    Utils.hideLoading();
+                    Utils.showToast('Master item berhasil dihapus.', 'success');
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menghapus master: ' + err.message, 'error');
+                }
+            },
+
+            renderUsersTable() {
+                const tbody = document.getElementById('tbody-users');
+                if (!tbody) return;
+
+                const users = CACHE.usersList || [];
+                if (users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada user terdaftar.</td></tr>`;
+                } else {
+                    tbody.innerHTML = users.map((u, index) => `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="p-3 text-center text-slate-400 font-medium">${index + 1}</td>
+                            <td class="p-3 font-bold text-slate-800">${u.username}</td>
+                            <td class="p-3 font-semibold text-slate-700">${u.nama_lengkap}</td>
+                            <td class="p-3"><span class="badge ${u.role === 'Admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'}">${u.role}</span></td>
+                            <td class="p-3"><span class="badge ${u.status_aktif ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${u.status_aktif ? 'Aktif' : 'Non-Aktif'}</span></td>
+                            <td class="p-3 text-slate-400">${Utils.formatDate(u.last_login)}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="App.openModalUser('${u.username}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit User"><span class="material-symbols-outlined text-base">edit</span></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            },
+
+            openModalUser(username = null) {
+                if (username) {
+                    const item = CACHE.usersList.find(x => x.username === username);
+                    if (!item) return;
+                    document.getElementById('usr-username').value = item.username;
+                    document.getElementById('usr-username').readOnly = true;
+                    document.getElementById('usr-nama').value = item.nama_lengkap;
+                    document.getElementById('usr-role').value = item.role;
+                    document.getElementById('usr-aktif').checked = item.status_aktif;
+                } else {
+                    document.getElementById('form-user').reset();
+                    document.getElementById('usr-username').readOnly = false;
+                }
+                Utils.openModal('modal-user');
+            },
+
+            async saveUser(e) {
+                e.preventDefault();
+                const username = document.getElementById('usr-username').value;
+                const passwordInput = document.getElementById('usr-password').value;
+
+                const payload = {
+                    username: username,
+                    nama_lengkap: document.getElementById('usr-nama').value,
+                    role: document.getElementById('usr-role').value,
+                    status_aktif: document.getElementById('usr-aktif').checked
+                };
+
+                if (passwordInput && passwordInput.trim() !== '') {
+                    const msgUint8 = new TextEncoder().encode(passwordInput.trim());
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    payload.password_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                }
+
+                Utils.showLoading('Menyimpan User ke Supabase...');
+                try {
+                    const { error } = await supabaseClient.from('users').upsert([payload]);
+                    if (error) throw error;
+
+                    triggerSheetsBackup('USER', 'UPSERT', payload);
+                    await logAuditActivity('UPDATE', 'USER_MANAGEMENT', username, null, payload);
+
+                    Utils.closeModal('modal-user');
+                    Utils.showToast('Data user berhasil disimpan!', 'success');
+                    await CACHE.refreshCache();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menyimpan user: ' + err.message, 'error');
+                }
+            },
+
+            renderLogHistoryTable() {
+                const tbody = document.getElementById('tbody-log-history');
+                if (!tbody) return;
+
+                const logs = CACHE.logHistory || [];
+                if (logs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada jejak audit terrekam.</td></tr>`;
+                } else {
+                    tbody.innerHTML = logs.map((l, index) => `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="p-3 text-center text-slate-400 font-medium">${index + 1}</td>
+                            <td class="p-3 text-slate-500">${l.tanggal} ${l.jam}</td>
+                            <td class="p-3 font-semibold text-slate-800">${l.user_login}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${l.aksi === 'CREATE' ? 'bg-emerald-100 text-emerald-700' : l.aksi === 'UPDATE' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}">${l.aksi}</span></td>
+                            <td class="p-3 font-medium">${l.nama_menu}</td>
+                            <td class="p-3 font-mono text-slate-600">${l.id_data}</td>
+                            <td class="p-3 max-w-xs truncate text-slate-500" title="${l.perubahan_baru}">${l.perubahan_baru}</td>
+                        </tr>
+                    `).join('');
+                }
+            },
+
+            async deleteRecord(menuKey, id) {
+                const tableMap = { sellOut: 'sell_out', sellIn: 'sell_in', budget: 'pemakaian_budget' };
+                const sheetNameMap = { sellOut: 'SELL_OUT', sellIn: 'SELL_IN', budget: 'PEMAKAIAN_BUDGET' };
+
+                Utils.showLoading('Menghapus data Supabase...');
+                try {
+                    const { error } = await supabaseClient.from(tableMap[menuKey]).delete().eq('id', id);
+                    if (error) throw error;
+
+                    triggerSheetsBackup(sheetNameMap[menuKey], 'DELETE', { id });
+                    await logAuditActivity('DELETE', sheetNameMap[menuKey], id, null, null);
+
+                    CACHE.deleteCacheItem(menuKey, id);
+                    Utils.hideLoading();
+                    Utils.showToast('Data berhasil dihapus.', 'success');
+                    Router.renderCurrentPage();
+                } catch (err) {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal menghapus: ' + err.message, 'error');
+                }
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
+    </script>
+</body>
+</html>
