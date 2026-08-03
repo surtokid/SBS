@@ -159,13 +159,16 @@
 </head>
 <body class="h-screen flex overflow-hidden">
 
+    <!-- GLOBAL LOADING SPINNER OVERLAY -->
     <div id="global-loading" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center text-white hidden">
         <div class="w-12 h-12 border-4 border-white border-t-red-600 rounded-full animate-spin mb-4"></div>
         <p id="loading-text" class="text-sm font-semibold tracking-wide">Memuat data...</p>
     </div>
 
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
 
+    <!-- LOGIN OVERLAY SCREEN -->
     <div id="login-screen" class="fixed inset-0 z-40 bg-slate-100 flex items-center justify-center p-4">
         <div class="card-modern w-full max-w-md p-8 border-t-4 border-t-[#D50000]">
             <div class="text-center mb-8">
@@ -205,6 +208,7 @@
         </div>
     </div>
 
+    <!-- SIDEBAR NAVIGATION DRAWER -->
     <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10 hidden" onclick="CACHE.toggleSidebar(false)"></div>
     <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col z-20 transition-all duration-300 -translate-x-full md:translate-x-0 fixed md:relative h-full">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between">
@@ -276,6 +280,7 @@
         </div>
     </aside>
 
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -286,6 +291,10 @@
             </div>
 
             <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[11px] font-semibold border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="hidden sm:inline">Realtime Live</span>
+                </div>
                 <button onclick="CACHE.refreshCache()" class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-[#D50000] bg-slate-100 hover:bg-red-50 rounded-lg transition" title="Sync / Refresh Data Server">
                     <span class="material-symbols-outlined text-base">sync</span>
                     <span class="hidden sm:inline">Sync Data</span>
@@ -299,6 +308,7 @@
 
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
 
+            <!-- PAGE: DASHBOARD -->
             <section id="view-dashboard" class="page-view space-y-6 hidden">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     <div class="card-modern p-5 border-l-4 border-l-blue-500">
@@ -379,6 +389,7 @@
                 </div>
             </section>
 
+            <!-- PAGE: SELL OUT -->
             <section id="view-sell-out" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -464,6 +475,7 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-out-mobile"></div>
             </section>
 
+            <!-- PAGE: SELL IN -->
             <section id="view-sell-in" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -537,6 +549,7 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-in-mobile"></div>
             </section>
 
+            <!-- PAGE: KLAIM BARANG -->
             <section id="view-klaim-barang" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -605,6 +618,7 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-klaim-barang-mobile"></div>
             </section>
 
+            <!-- PAGE: BUDGET -->
             <section id="view-budget" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -665,6 +679,7 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-budget-mobile"></div>
             </section>
 
+            <!-- PAGE: MASTER -->
             <section id="view-master" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4">
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pilih Kategori Master</p>
@@ -697,6 +712,7 @@
                 </div>
             </section>
 
+            <!-- PAGE: USERS -->
             <section id="view-users" class="page-view space-y-5 hidden">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-bold text-slate-800">Daftar Pengguna Sistem</h3>
@@ -726,6 +742,7 @@
                 </div>
             </section>
 
+            <!-- PAGE: AUDIT LOG -->
             <section id="view-log-history" class="page-view space-y-5 hidden">
                 <div class="card-modern overflow-hidden">
                     <div class="p-4 border-b border-slate-100">
@@ -752,7 +769,6 @@
 
         </main>
     </div>
-
 
     <!-- MODAL QUICK ADD MASTER -->
     <div id="modal-quick-add-master" class="fixed inset-0 z-[70] modal-backdrop flex items-center justify-center p-4 hidden">
@@ -1198,8 +1214,9 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT SYSTEM ENGINE -->
+    <!-- MAIN JAVASCRIPT APPLICATION CORE -->
     <script>
+        // CONFIGURATION OBJECT
         const CONFIG = {
             SUPABASE_URL: 'https://ofaljbvrxhhkjnugkgbr.supabase.co',
             SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mYWxqYnZyeGhoa2pudWdrZ2JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NTU3NjYsImV4cCI6MjEwMTMzMTc2Nn0.EdxsU5ISLWnuhzMYYI8fyZpK9AHitDVGC8KWG6T0aXE',
@@ -1222,6 +1239,7 @@
             }
         };
 
+        // INITIALIZE SUPABASE CLIENT
         let supabaseClient = null;
         try {
             if (window.supabase && typeof window.supabase.createClient === 'function') {
@@ -1231,10 +1249,32 @@
             console.error('Failed to initialize Supabase client:', err);
         }
 
+        // SUPABASE REALTIME MULTI-USER SYNCHRONIZATION
+        function initRealtimeSubscriptions() {
+            if (!supabaseClient) return;
+            try {
+                supabaseClient
+                    .channel('public-db-realtime-changes')
+                    .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+                        console.log('Realtime DB change detected:', payload);
+                        CACHE.refreshCache(true); // Silent background sync on DB mutations
+                    })
+                    .subscribe();
+            } catch (err) {
+                console.warn('Realtime subscription setup failed:', err);
+            }
+        }
+
+        // UTILITY FUNCTIONS
         const Utils = {
             formatRupiah(num) {
                 if (num === null || num === undefined || isNaN(num)) return 'Rp 0';
                 return 'Rp ' + Number(num).toLocaleString('id-ID');
+            },
+
+            sanitizeDate(val) {
+                if (!val || typeof val !== 'string' || val.trim() === '') return null;
+                return val.trim();
             },
 
             formatDate(dateStr) {
@@ -1408,6 +1448,7 @@
             }
         };
 
+        // ASYNC BACKUP TRIGGER TO GOOGLE SHEETS
         async function triggerSheetsBackup(sheetName, action, data) {
             if (!CONFIG.GAS_BACKUP_URL || CONFIG.GAS_BACKUP_URL.trim() === '') return;
             try {
@@ -1422,6 +1463,7 @@
             }
         }
 
+        // AUDIT LOGGING SERVICE
         async function logAuditActivity(action, menuName, targetId, oldData, newData) {
             const user = Auth.getLoggedInUser();
             const now = new Date();
@@ -1443,6 +1485,7 @@
             }
         }
 
+        // GLOBAL IN-MEMORY DATA CACHE MANAGER
         const CACHE = {
             master: {},        
             masterRaw: [],     
@@ -1454,21 +1497,22 @@
             logHistory: [],
             isLoaded: false,
 
-            async initCacheData() {
-                Utils.showLoading('SINKRONISASI DATA SUPABASE...');
+            async initCacheData(silent = false) {
+                if (!silent) Utils.showLoading('SINKRONISASI DATA...');
                 try {
                     if (!supabaseClient) {
-                        Utils.hideLoading();
-                        Utils.showToast('Supabase Client belum dikonfigurasi!', 'error');
+                        if (!silent) Utils.hideLoading();
+                        Utils.showToast('Client Database belum dikonfigurasi!', 'error');
                         return;
                     }
 
+                    // Order Ascending by created_at so new records are appended at the bottom
                     const [resMaster, resSellOut, resSellIn, resKlaim, resBudget] = await Promise.all([
                         supabaseClient.from('master').select('*').order('urutan', { ascending: true }),
-                        supabaseClient.from('sell_out').select('*').order('created_at', { ascending: false }),
-                        supabaseClient.from('sell_in').select('*').order('created_at', { ascending: false }),
-                        supabaseClient.from('klaim_barang').select('*').order('created_at', { ascending: false }),
-                        supabaseClient.from('pemakaian_budget').select('*').order('created_at', { ascending: false })
+                        supabaseClient.from('sell_out').select('*').order('created_at', { ascending: true }),
+                        supabaseClient.from('sell_in').select('*').order('created_at', { ascending: true }),
+                        supabaseClient.from('klaim_barang').select('*').order('created_at', { ascending: true }),
+                        supabaseClient.from('pemakaian_budget').select('*').order('created_at', { ascending: true })
                     ]);
 
                     if (resMaster.data) {
@@ -1482,7 +1526,7 @@
 
                     if (Auth.getUserRole() === 'Admin') {
                         const [resUsers, resLogs] = await Promise.all([
-                            supabaseClient.from('users').select('*').order('created_at', { ascending: false }),
+                            supabaseClient.from('users').select('*').order('created_at', { ascending: true }),
                             supabaseClient.from('log_history').select('*').order('created_at', { ascending: false }).limit(200)
                         ]);
                         if (resUsers.data) this.usersList = resUsers.data;
@@ -1490,11 +1534,10 @@
                     }
 
                     this.isLoaded = true;
-                    Utils.hideLoading();
-                    Utils.showToast('Data Supabase berhasil dimuat.', 'success');
+                    if (!silent) Utils.hideLoading();
                 } catch (err) {
-                    Utils.hideLoading();
-                    Utils.showToast('Gagal memuat Supabase: ' + err.message, 'error');
+                    if (!silent) Utils.hideLoading();
+                    Utils.showToast('Gagal memuat data: ' + err.message, 'error');
                 }
             },
 
@@ -1514,8 +1557,8 @@
                 });
             },
 
-            async refreshCache() {
-                await this.initCacheData();
+            async refreshCache(silent = false) {
+                await this.initCacheData(silent);
                 Router.renderCurrentPage();
             },
 
@@ -1527,7 +1570,7 @@
                 if (index !== -1) {
                     list[index] = updatedItem;
                 } else {
-                    list.unshift(updatedItem);
+                    list.push(updatedItem); // Append at the bottom for ascending order
                 }
             },
 
@@ -1555,6 +1598,7 @@
             }
         };
 
+        // SPA ROUTER ENGINE
         const Router = {
             activePage: 'dashboard',
 
@@ -1634,6 +1678,7 @@
             }
         };
 
+        // AUTHENTICATION SYSTEM
         const Auth = {
             init() {
                 const sessionStr = localStorage.getItem('suryatokoku_session');
@@ -1645,7 +1690,10 @@
                         if (session.token) {
                             screen.classList.add('hidden');
                             this.updateUserUI(session.user);
-                            CACHE.initCacheData().then(() => Router.init());
+                            CACHE.initCacheData().then(() => {
+                                Router.init();
+                                initRealtimeSubscriptions();
+                            });
                             return;
                         }
                     } catch (e) {}
@@ -1690,7 +1738,7 @@
                 const u = document.getElementById('login-username').value.trim();
                 const p = document.getElementById('login-password').value.trim();
 
-                Utils.showLoading('Memverifikasi Login Supabase...');
+                Utils.showLoading('Memverifikasi Login...');
 
                 try {
                     let userMatch = null;
@@ -1708,7 +1756,7 @@
                     const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
                     if (!userMatch) {
-                        // Fallback default admin if new schema
+                        // Fallback default admin
                         if (u === 'admin' && p === 'admin123') {
                             userMatch = { username: 'admin', nama_lengkap: 'Administrator System', role: 'Admin', status_aktif: true };
                         }
@@ -1738,6 +1786,7 @@
 
                         await CACHE.initCacheData();
                         Router.init();
+                        initRealtimeSubscriptions();
                     } else {
                         Utils.hideLoading();
                         Utils.showToast('Username atau password tidak terdaftar.', 'error');
@@ -1772,6 +1821,7 @@
             }
         };
 
+        // CLIENT-SIDE PAGINATION & FILTERING ENGINE
         const DataTable = {
             state: {},
 
@@ -1872,6 +1922,7 @@
             }
         };
 
+        // MAIN APPLICATION CONTROLLER
         const App = {
             fileTempStorage: { so: [], si: [] },
             chartBrand: null,
@@ -2000,7 +2051,7 @@
                     tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell Out.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2106,15 +2157,18 @@
 
             async saveSellOut(e) {
                 e.preventDefault();
-                const recordId = document.getElementById('so-id').value || ('SOUT-' + Date.now());
+                const existingId = document.getElementById('so-id').value;
+                const isEdit = Boolean(existingId);
+                const recordId = existingId || ('SOUT-' + Date.now());
+
                 const payload = {
                     id: recordId,
                     periode_bulan: document.getElementById('so-periode').value,
                     channel: document.getElementById('so-channel').value,
                     nama_grup_brand: document.getElementById('so-grup').value,
                     nama_brand: document.getElementById('so-brand').value,
-                    tanggal_mulai: document.getElementById('so-tgl-mulai').value,
-                    tanggal_berakhir: document.getElementById('so-tgl-akhir').value,
+                    tanggal_mulai: Utils.sanitizeDate(document.getElementById('so-tgl-mulai').value),
+                    tanggal_berakhir: Utils.sanitizeDate(document.getElementById('so-tgl-akhir').value),
                     promo_nama_event: document.getElementById('so-event').value,
                     nomor_skp: document.getElementById('so-nomor-skp').value,
                     deskripsi_promo: document.getElementById('so-deskripsi').value,
@@ -2123,40 +2177,55 @@
                     mekanisme_klaim: document.getElementById('so-mekanisme').value,
                     metode_klaim: document.getElementById('so-metode').value,
                     status_klaim: document.getElementById('so-status').value,
-                    tanggal_diklaim: document.getElementById('so-tgl-diklaim').value,
+                    tanggal_diklaim: Utils.sanitizeDate(document.getElementById('so-tgl-diklaim').value),
                     files_skp: this.fileTempStorage.so,
                     updated_at: new Date().toISOString()
                 };
 
-                Utils.showLoading('Menyimpan ke Supabase...');
+                Utils.showLoading('Menyimpan Data...');
                 try {
                     const { data, error } = await supabaseClient.from('sell_out').upsert([payload]).select();
                     if (error) throw error;
 
-                    // If Mekanisme Ganti Produk, sync to Klaim Barang table
+                    // Synchronize Klaim Barang table for "Ganti Produk" mechanism
                     if (payload.mekanisme_klaim === 'Ganti Produk') {
+                        const { data: existingKlaim } = await supabaseClient
+                            .from('klaim_barang')
+                            .select('id')
+                            .eq('sumber_program', 'SELL_OUT')
+                            .eq('ref_id_program', recordId)
+                            .maybeSingle();
+
                         const klaimObj = {
-                            id: 'KLM-' + Date.now(),
                             sumber_program: 'SELL_OUT',
                             ref_id_program: recordId,
                             periode_bulan: payload.periode_bulan,
                             nama_grup_brand: payload.nama_grup_brand,
                             nama_brand: payload.nama_brand,
                             files_skp: payload.files_skp,
-                            nomor_skp: payload.nomor_skp,
+                            nomor_skp: payload.nomor_skp || '',
                             nominal_klaim: payload.nominal_klaim,
                             status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
                             updated_at: new Date().toISOString()
                         };
-                        await supabaseClient.from('klaim_barang').upsert([klaimObj], { onConflict: 'sumber_program,ref_id_program' });
+
+                        if (existingKlaim) {
+                            klaimObj.id = existingKlaim.id;
+                            await supabaseClient.from('klaim_barang').update(klaimObj).eq('id', existingKlaim.id);
+                        } else {
+                            klaimObj.id = 'KLM-' + Date.now();
+                            await supabaseClient.from('klaim_barang').insert([klaimObj]);
+                        }
                         triggerSheetsBackup('KLAIM_BARANG', 'UPSERT', klaimObj);
+                    } else {
+                        await supabaseClient.from('klaim_barang').delete().match({ sumber_program: 'SELL_OUT', ref_id_program: recordId });
                     }
 
                     triggerSheetsBackup('SELL_OUT', 'UPSERT', payload);
-                    await logAuditActivity(document.getElementById('so-id').value ? 'UPDATE' : 'CREATE', 'SELL_OUT', recordId, null, payload);
+                    await logAuditActivity(isEdit ? 'UPDATE' : 'CREATE', 'SELL_OUT', recordId, null, payload);
 
                     Utils.closeModal('modal-sell-out');
-                    Utils.showToast('Program Sell Out berhasil disimpan ke Supabase!', 'success');
+                    Utils.showToast(isEdit ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!', 'success');
                     await CACHE.refreshCache();
                 } catch (err) {
                     Utils.hideLoading();
@@ -2182,7 +2251,7 @@
                     tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell In.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2285,7 +2354,10 @@
 
             async saveSellIn(e) {
                 e.preventDefault();
-                const recordId = document.getElementById('si-id').value || ('SIN-' + Date.now());
+                const existingId = document.getElementById('si-id').value;
+                const isEdit = Boolean(existingId);
+                const recordId = existingId || ('SIN-' + Date.now());
+
                 const payload = {
                     id: recordId,
                     periode_bulan: document.getElementById('si-periode').value,
@@ -2311,8 +2383,14 @@
                     if (error) throw error;
 
                     if (payload.mekanisme_klaim === 'Ganti Produk') {
+                        const { data: existingKlaim } = await supabaseClient
+                            .from('klaim_barang')
+                            .select('id')
+                            .eq('sumber_program', 'SELL_IN')
+                            .eq('ref_id_program', recordId)
+                            .maybeSingle();
+
                         const klaimObj = {
-                            id: 'KLM-' + Date.now(),
                             sumber_program: 'SELL_IN',
                             ref_id_program: recordId,
                             periode_bulan: payload.periode_bulan,
@@ -2324,15 +2402,24 @@
                             status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
                             updated_at: new Date().toISOString()
                         };
-                        await supabaseClient.from('klaim_barang').upsert([klaimObj], { onConflict: 'sumber_program,ref_id_program' });
+
+                        if (existingKlaim) {
+                            klaimObj.id = existingKlaim.id;
+                            await supabaseClient.from('klaim_barang').update(klaimObj).eq('id', existingKlaim.id);
+                        } else {
+                            klaimObj.id = 'KLM-' + Date.now();
+                            await supabaseClient.from('klaim_barang').insert([klaimObj]);
+                        }
                         triggerSheetsBackup('KLAIM_BARANG', 'UPSERT', klaimObj);
+                    } else {
+                        await supabaseClient.from('klaim_barang').delete().match({ sumber_program: 'SELL_IN', ref_id_program: recordId });
                     }
 
                     triggerSheetsBackup('SELL_IN', 'UPSERT', payload);
-                    await logAuditActivity(document.getElementById('si-id').value ? 'UPDATE' : 'CREATE', 'SELL_IN', recordId, null, payload);
+                    await logAuditActivity(isEdit ? 'UPDATE' : 'CREATE', 'SELL_IN', recordId, null, payload);
 
                     Utils.closeModal('modal-sell-in');
-                    Utils.showToast('Program Sell In berhasil disimpan!', 'success');
+                    Utils.showToast(isEdit ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!', 'success');
                     await CACHE.refreshCache();
                 } catch (err) {
                     Utils.hideLoading();
@@ -2376,9 +2463,9 @@
                     tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400">Tidak ada data klaim barang (Ganti Produk).</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
                         const filesList = Array.isArray(r.files_skp) ? r.files_skp : [];
-                        const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
+                        const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
 
                         return `
                             <tr class="hover:bg-slate-50 transition">
@@ -2417,30 +2504,36 @@
                     if (paginated.pageData.length === 0) {
                         cardsContainer.innerHTML = `<div class="card-modern p-6 text-center text-slate-400 text-xs">Tidak ada data Klaim Barang.</div>`;
                     } else {
-                        cardsContainer.innerHTML = paginated.pageData.map(r => `
-                            <div class="card-modern p-4 space-y-2">
-                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                    <div>
-                                        <span class="font-bold text-slate-800 text-xs">${r.sumber_program}</span>
-                                        <p class="text-[10px] text-slate-400">SKP: ${r.nomor_skp || '-'}</p>
+                        cardsContainer.innerHTML = paginated.pageData.map(r => {
+                            const filesList = Array.isArray(r.files_skp) ? r.files_skp : [];
+                            const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
+
+                            return `
+                                <div class="card-modern p-4 space-y-2">
+                                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                        <div>
+                                            <span class="font-bold text-slate-800 text-xs">${r.sumber_program}</span>
+                                            <p class="text-[10px] text-slate-400">SKP: ${r.nomor_skp || '-'}</p>
+                                        </div>
+                                        <span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span>
                                     </div>
-                                    <span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2 text-[11px]">
-                                    <div><span class="text-slate-400">Periode:</span> <span class="font-semibold">${Utils.formatPeriodeBulan(r.periode_bulan)}</span></div>
-                                    <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
-                                    <div><span class="text-slate-400">Nominal HET:</span> <span class="font-semibold">${Utils.formatRupiah(r.nominal_het)}</span></div>
-                                    <div><span class="text-slate-400">PO CSA:</span> <span class="font-semibold">${r.nomor_po_csa || '-'}</span></div>
-                                </div>
-                                <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                                    <div>
-                                        <p class="text-[10px] text-slate-400">Nominal Klaim</p>
-                                        <p class="font-bold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</p>
+                                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                        <div><span class="text-slate-400">Periode:</span> <span class="font-semibold">${Utils.formatPeriodeBulan(r.periode_bulan)}</span></div>
+                                        <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
+                                        <div><span class="text-slate-400">Nominal HET:</span> <span class="font-semibold">${Utils.formatRupiah(r.nominal_het)}</span></div>
+                                        <div><span class="text-slate-400">PO CSA:</span> <span class="font-semibold">${r.nomor_po_csa || '-'}</span></div>
                                     </div>
-                                    <button onclick="App.openModalKlaimBarang('${r.id}')" class="px-3 py-1.5 bg-[#D50000] text-white rounded-lg font-semibold text-xs">Update Klaim</button>
+                                    ${fileLinks ? `<div class="text-[11px] border-t border-slate-50 pt-1.5"><span class="text-slate-400 block mb-0.5">File SKP:</span>${fileLinks}</div>` : ''}
+                                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                                        <div>
+                                            <p class="text-[10px] text-slate-400">Nominal Klaim</p>
+                                            <p class="font-bold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</p>
+                                        </div>
+                                        <button onclick="App.openModalKlaimBarang('${r.id}')" class="px-3 py-1.5 bg-[#D50000] text-white rounded-lg font-semibold text-xs">Update Klaim</button>
+                                    </div>
                                 </div>
-                            </div>
-                        `).join('');
+                            `;
+                        }).join('');
                     }
                 }
 
@@ -2513,7 +2606,7 @@
                     await logAuditActivity('UPDATE', 'KLAIM_BARANG', kbId, item, payload);
 
                     Utils.closeModal('modal-klaim-barang');
-                    Utils.showToast('Klaim Barang & Status Program berhasil diperbarui!', 'success');
+                    Utils.showToast('Data berhasil diperbarui!', 'success');
                     await CACHE.refreshCache();
                 } catch (err) {
                     Utils.hideLoading();
@@ -2538,7 +2631,7 @@
                     tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">Tidak ada data pemakaian budget.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.startIdx + index + 1;
+                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2691,7 +2784,10 @@
                     refId = parts[1];
                 }
 
-                const recordId = document.getElementById('bud-id').value || ('BUD-' + Date.now());
+                const existingId = document.getElementById('bud-id').value;
+                const isEdit = Boolean(existingId);
+                const recordId = existingId || ('BUD-' + Date.now());
+
                 const payload = {
                     id: recordId,
                     sumber_program: sumberProg,
@@ -2701,7 +2797,7 @@
                     nama_grup_brand: document.getElementById('bud-grup').value,
                     nama_brand: document.getElementById('bud-brand').value,
                     nominal_budget: Utils.parseCurrencyValue(document.getElementById('bud-nominal').value),
-                    tanggal_pemakaian: document.getElementById('bud-tgl-pemakaian').value,
+                    tanggal_pemakaian: Utils.sanitizeDate(document.getElementById('bud-tgl-pemakaian').value),
                     pemakaian_budget: document.getElementById('bud-keterangan').value,
                     status_pemakaian: document.getElementById('bud-status').value,
                     updated_at: new Date().toISOString()
@@ -2713,10 +2809,10 @@
                     if (error) throw error;
 
                     triggerSheetsBackup('PEMAKAIAN_BUDGET', 'UPSERT', payload);
-                    await logAuditActivity(document.getElementById('bud-id').value ? 'UPDATE' : 'CREATE', 'PEMAKAIAN_BUDGET', recordId, null, payload);
+                    await logAuditActivity(isEdit ? 'UPDATE' : 'CREATE', 'PEMAKAIAN_BUDGET', recordId, null, payload);
 
                     Utils.closeModal('modal-budget');
-                    Utils.showToast('Data Budget berhasil disimpan ke Supabase!', 'success');
+                    Utils.showToast(isEdit ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!', 'success');
                     await CACHE.refreshCache();
                 } catch (err) {
                     Utils.hideLoading();
@@ -2967,6 +3063,22 @@
 
                 if (!nilai) return;
 
+                // Preserve form state before dropdown rebuild
+                const prefix = targetSelectId.split('-')[0];
+                const formId = prefix === 'so' ? 'form-sell-out' : (prefix === 'si' ? 'form-sell-in' : (prefix === 'bud' ? 'form-budget' : (prefix === 'kb' ? 'form-klaim-barang' : null)));
+                const formState = {};
+                if (formId) {
+                    const formEl = document.getElementById(formId);
+                    if (formEl) {
+                        const inputs = formEl.querySelectorAll('input, select, textarea');
+                        inputs.forEach(input => {
+                            if (input.id && input.id !== targetSelectId) {
+                                formState[input.id] = input.value;
+                            }
+                        });
+                    }
+                }
+
                 const newId = 'MST-' + Date.now();
                 const payload = { id: newId, kategori, nilai, urutan: 1, status_aktif: true };
 
@@ -2984,8 +3096,18 @@
                     CACHE.masterRaw.push(payload);
                     CACHE.processMasterGroup(CACHE.masterRaw);
 
-                    const prefix = targetSelectId.split('-')[0];
                     this.populateDropdowns(prefix);
+
+                    // Restore form field values
+                    for (let fieldId in formState) {
+                        this.setSelectValue(fieldId, formState[fieldId]);
+                        const el = document.getElementById(fieldId);
+                        if (el && !this.tomSelectInstances[fieldId]) {
+                            el.value = formState[fieldId];
+                        }
+                    }
+
+                    // Automatically select newly added master item
                     this.setSelectValue(targetSelectId, nilai);
                     Utils.hideLoading();
                 } catch (err) {
@@ -3012,7 +3134,10 @@
 
             async saveMasterItem(e) {
                 e.preventDefault();
-                const newId = document.getElementById('mst-id').value || ('MST-' + Date.now());
+                const existingId = document.getElementById('mst-id').value;
+                const isEdit = Boolean(existingId);
+                const newId = existingId || ('MST-' + Date.now());
+
                 const payload = {
                     id: newId,
                     kategori: document.getElementById('mst-kategori').value,
@@ -3021,16 +3146,16 @@
                     status_aktif: document.getElementById('mst-aktif').checked
                 };
 
-                Utils.showLoading('Menyimpan ke Supabase...');
+                Utils.showLoading('Menyimpan Data...');
                 try {
                     const { error } = await supabaseClient.from('master').upsert([payload]);
                     if (error) throw error;
 
                     triggerSheetsBackup('MASTER', 'UPSERT', payload);
-                    await logAuditActivity('UPDATE', 'SETTING_MASTER', newId, null, payload);
+                    await logAuditActivity(isEdit ? 'UPDATE' : 'CREATE', 'SETTING_MASTER', newId, null, payload);
 
                     Utils.closeModal('modal-master');
-                    Utils.showToast('Master data berhasil disimpan!', 'success');
+                    Utils.showToast(isEdit ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!', 'success');
                     await CACHE.refreshCache();
                 } catch (err) {
                     Utils.hideLoading();
@@ -3103,6 +3228,7 @@
                 e.preventDefault();
                 const username = document.getElementById('usr-username').value;
                 const passwordInput = document.getElementById('usr-password').value;
+                const isEdit = document.getElementById('usr-username').readOnly;
 
                 const payload = {
                     username: username,
@@ -3118,16 +3244,16 @@
                     payload.password_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
                 }
 
-                Utils.showLoading('Menyimpan User ke Supabase...');
+                Utils.showLoading('Menyimpan User...');
                 try {
                     const { error } = await supabaseClient.from('users').upsert([payload]);
                     if (error) throw error;
 
                     triggerSheetsBackup('USER', 'UPSERT', payload);
-                    await logAuditActivity('UPDATE', 'USER_MANAGEMENT', username, null, payload);
+                    await logAuditActivity(isEdit ? 'UPDATE' : 'CREATE', 'USER_MANAGEMENT', username, null, payload);
 
                     Utils.closeModal('modal-user');
-                    Utils.showToast('Data user berhasil disimpan!', 'success');
+                    Utils.showToast(isEdit ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!', 'success');
                     await CACHE.refreshCache();
                 } catch (err) {
                     Utils.hideLoading();
@@ -3161,10 +3287,17 @@
                 const tableMap = { sellOut: 'sell_out', sellIn: 'sell_in', budget: 'pemakaian_budget' };
                 const sheetNameMap = { sellOut: 'SELL_OUT', sellIn: 'SELL_IN', budget: 'PEMAKAIAN_BUDGET' };
 
-                Utils.showLoading('Menghapus data Supabase...');
+                Utils.showLoading('Menghapus Data...');
                 try {
                     const { error } = await supabaseClient.from(tableMap[menuKey]).delete().eq('id', id);
                     if (error) throw error;
+
+                    // Clean up corresponding Klaim Barang record if program is deleted
+                    if (menuKey === 'sellOut') {
+                        await supabaseClient.from('klaim_barang').delete().match({ sumber_program: 'SELL_OUT', ref_id_program: id });
+                    } else if (menuKey === 'sellIn') {
+                        await supabaseClient.from('klaim_barang').delete().match({ sumber_program: 'SELL_IN', ref_id_program: id });
+                    }
 
                     triggerSheetsBackup(sheetNameMap[menuKey], 'DELETE', { id });
                     await logAuditActivity('DELETE', sheetNameMap[menuKey], id, null, null);
@@ -3172,7 +3305,7 @@
                     CACHE.deleteCacheItem(menuKey, id);
                     Utils.hideLoading();
                     Utils.showToast('Data berhasil dihapus.', 'success');
-                    Router.renderCurrentPage();
+                    await CACHE.refreshCache();
                 } catch (err) {
                     Utils.hideLoading();
                     Utils.showToast('Gagal menghapus: ' + err.message, 'error');
@@ -3180,6 +3313,7 @@
             }
         };
 
+        // INITIALIZE ON LOAD
         window.addEventListener('DOMContentLoaded', () => {
             App.init();
         });
