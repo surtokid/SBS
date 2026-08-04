@@ -168,7 +168,6 @@
     <!-- TOAST NOTIFICATIONS CONTAINER -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
 
-    <!-- LOGIN OVERLAY SCREEN -->
     <div id="login-screen" class="fixed inset-0 z-40 bg-slate-100 flex items-center justify-center p-4">
         <div class="card-modern w-full max-w-md p-8 border-t-4 border-t-[#D50000]">
             <div class="text-center mb-8">
@@ -208,7 +207,6 @@
         </div>
     </div>
 
-    <!-- SIDEBAR NAVIGATION DRAWER -->
     <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10 hidden" onclick="CACHE.toggleSidebar(false)"></div>
     <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col z-20 transition-all duration-300 -translate-x-full md:translate-x-0 fixed md:relative h-full">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between">
@@ -280,7 +278,6 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT CONTAINER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -291,17 +288,13 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[11px] font-semibold border border-emerald-200">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="hidden sm:inline">Realtime Live</span>
-                </div>
                 <button onclick="CACHE.refreshCache()" class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-[#D50000] bg-slate-100 hover:bg-red-50 rounded-lg transition" title="Sync / Refresh Data Server">
                     <span class="material-symbols-outlined text-base">sync</span>
                     <span class="hidden sm:inline">Sync Data</span>
                 </button>
                 <span class="text-xs text-slate-400 hidden sm:inline">|</span>
                 <span id="current-date-badge" class="text-xs font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-                    03 Aug 2026
+                    04 Aug 2026
                 </span>
             </div>
         </header>
@@ -389,7 +382,6 @@
                 </div>
             </section>
 
-            <!-- PAGE: SELL OUT -->
             <section id="view-sell-out" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -475,7 +467,6 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-out-mobile"></div>
             </section>
 
-            <!-- PAGE: SELL IN -->
             <section id="view-sell-in" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -549,7 +540,6 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-in-mobile"></div>
             </section>
 
-            <!-- PAGE: KLAIM BARANG -->
             <section id="view-klaim-barang" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -618,7 +608,6 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-klaim-barang-mobile"></div>
             </section>
 
-            <!-- PAGE: BUDGET -->
             <section id="view-budget" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -679,7 +668,6 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-budget-mobile"></div>
             </section>
 
-            <!-- PAGE: MASTER -->
             <section id="view-master" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4">
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pilih Kategori Master</p>
@@ -712,7 +700,6 @@
                 </div>
             </section>
 
-            <!-- PAGE: USERS -->
             <section id="view-users" class="page-view space-y-5 hidden">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-bold text-slate-800">Daftar Pengguna Sistem</h3>
@@ -742,7 +729,6 @@
                 </div>
             </section>
 
-            <!-- PAGE: AUDIT LOG -->
             <section id="view-log-history" class="page-view space-y-5 hidden">
                 <div class="card-modern overflow-hidden">
                     <div class="p-4 border-b border-slate-100">
@@ -770,7 +756,6 @@
         </main>
     </div>
 
-    <!-- MODAL QUICK ADD MASTER -->
     <div id="modal-quick-add-master" class="fixed inset-0 z-[70] modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-sm bg-white overflow-hidden shadow-2xl">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -879,7 +864,7 @@
                 </div>
 
                 <div class="border-t border-slate-200 pt-4">
-                    <label class="block font-semibold text-slate-700 mb-1">Upload File SKP & Pendukung (Google Drive)</label>
+                    <label class="block font-semibold text-slate-700 mb-1">Upload File SKP & Pendukung (Google Drive Direct)</label>
                     <input type="file" id="so-files-input" multiple onchange="App.handleFileUpload(event, 'so')" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-[#D50000] hover:file:bg-red-100">
                     <div id="so-files-list" class="mt-3 space-y-2"></div>
                 </div>
@@ -892,7 +877,6 @@
         </div>
     </div>
 
-    <!-- MODAL SELL IN -->
     <div id="modal-sell-in" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden bg-white">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -963,7 +947,7 @@
                 </div>
 
                 <div class="border-t border-slate-200 pt-4">
-                    <label class="block font-semibold text-slate-700 mb-1">Upload File SKP & Pendukung</label>
+                    <label class="block font-semibold text-slate-700 mb-1">Upload File SKP & Pendukung (Google Drive Direct)</label>
                     <input type="file" id="si-files-input" multiple onchange="App.handleFileUpload(event, 'si')" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-[#D50000]">
                     <div id="si-files-list" class="mt-3 space-y-2"></div>
                 </div>
@@ -976,7 +960,6 @@
         </div>
     </div>
 
-    <!-- MODAL KLAIM BARANG -->
     <div id="modal-klaim-barang" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-lg bg-white overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -1121,7 +1104,6 @@
         </div>
     </div>
 
-    <!-- MODAL MASTER DATA -->
     <div id="modal-master" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-md bg-white overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -1214,7 +1196,6 @@
         </div>
     </div>
 
-    <!-- MAIN JAVASCRIPT APPLICATION CORE -->
     <script>
         // CONFIGURATION OBJECT
         const CONFIG = {
@@ -1249,23 +1230,6 @@
             console.error('Failed to initialize Supabase client:', err);
         }
 
-        // SUPABASE REALTIME MULTI-USER SYNCHRONIZATION
-        function initRealtimeSubscriptions() {
-            if (!supabaseClient) return;
-            try {
-                supabaseClient
-                    .channel('public-db-realtime-changes')
-                    .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-                        console.log('Realtime DB change detected:', payload);
-                        CACHE.refreshCache(true); // Silent background sync on DB mutations
-                    })
-                    .subscribe();
-            } catch (err) {
-                console.warn('Realtime subscription setup failed:', err);
-            }
-        }
-
-        // UTILITY FUNCTIONS
         const Utils = {
             formatRupiah(num) {
                 if (num === null || num === undefined || isNaN(num)) return 'Rp 0';
@@ -1433,7 +1397,6 @@
                                 table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
                                 th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
                                 th { background-color: #f2f2f2; font-weight: bold; }
-                                th:last-child, td:last-child { display: table-cell; }
                             </style>
                         </head>
                         <body>
@@ -1448,7 +1411,6 @@
             }
         };
 
-        // ASYNC BACKUP TRIGGER TO GOOGLE SHEETS
         async function triggerSheetsBackup(sheetName, action, data) {
             if (!CONFIG.GAS_BACKUP_URL || CONFIG.GAS_BACKUP_URL.trim() === '') return;
             try {
@@ -1463,7 +1425,6 @@
             }
         }
 
-        // AUDIT LOGGING SERVICE
         async function logAuditActivity(action, menuName, targetId, oldData, newData) {
             const user = Auth.getLoggedInUser();
             const now = new Date();
@@ -1485,7 +1446,6 @@
             }
         }
 
-        // GLOBAL IN-MEMORY DATA CACHE MANAGER
         const CACHE = {
             master: {},        
             masterRaw: [],     
@@ -1598,7 +1558,6 @@
             }
         };
 
-        // SPA ROUTER ENGINE
         const Router = {
             activePage: 'dashboard',
 
@@ -1678,7 +1637,6 @@
             }
         };
 
-        // AUTHENTICATION SYSTEM
         const Auth = {
             init() {
                 const sessionStr = localStorage.getItem('suryatokoku_session');
@@ -1692,7 +1650,6 @@
                             this.updateUserUI(session.user);
                             CACHE.initCacheData().then(() => {
                                 Router.init();
-                                initRealtimeSubscriptions();
                             });
                             return;
                         }
@@ -1756,7 +1713,6 @@
                     const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
                     if (!userMatch) {
-                        // Fallback default admin
                         if (u === 'admin' && p === 'admin123') {
                             userMatch = { username: 'admin', nama_lengkap: 'Administrator System', role: 'Admin', status_aktif: true };
                         }
@@ -1786,7 +1742,6 @@
 
                         await CACHE.initCacheData();
                         Router.init();
-                        initRealtimeSubscriptions();
                     } else {
                         Utils.hideLoading();
                         Utils.showToast('Username atau password tidak terdaftar.', 'error');
@@ -1821,7 +1776,6 @@
             }
         };
 
-        // CLIENT-SIDE PAGINATION & FILTERING ENGINE
         const DataTable = {
             state: {},
 
@@ -1922,7 +1876,6 @@
             }
         };
 
-        // MAIN APPLICATION CONTROLLER
         const App = {
             fileTempStorage: { so: [], si: [] },
             chartBrand: null,
@@ -2078,7 +2031,6 @@
                     }).join('');
                 }
 
-                // Mobile Card Render
                 const cardsContainer = document.getElementById('cards-sell-out');
                 if (cardsContainer) {
                     if (paginated.pageData.length === 0) {
@@ -2187,7 +2139,6 @@
                     const { data, error } = await supabaseClient.from('sell_out').upsert([payload]).select();
                     if (error) throw error;
 
-                    // Synchronize Klaim Barang table for "Ganti Produk" mechanism
                     if (payload.mekanisme_klaim === 'Ganti Produk') {
                         const { data: existingKlaim } = await supabaseClient
                             .from('klaim_barang')
@@ -2277,7 +2228,6 @@
                     }).join('');
                 }
 
-                // Mobile Card Render
                 const cardsContainer = document.getElementById('cards-sell-in');
                 if (cardsContainer) {
                     if (paginated.pageData.length === 0) {
@@ -2498,7 +2448,6 @@
                     }).join('');
                 }
 
-                // Mobile Cards Render
                 const cardsContainer = document.getElementById('cards-klaim-barang');
                 if (cardsContainer) {
                     if (paginated.pageData.length === 0) {
@@ -2595,7 +2544,6 @@
                     const { error } = await supabaseClient.from('klaim_barang').update(payload).eq('id', kbId);
                     if (error) throw error;
 
-                    // Sync status back to main program (Sell Out / Sell In)
                     if (item.sumber_program === 'SELL_OUT') {
                         await supabaseClient.from('sell_out').update({ status_klaim: newStatus, updated_at: new Date().toISOString() }).eq('id', item.ref_id_program);
                     } else if (item.sumber_program === 'SELL_IN') {
@@ -2657,7 +2605,6 @@
                     }).join('');
                 }
 
-                // Mobile Card Render
                 const cardsContainer = document.getElementById('cards-budget');
                 if (cardsContainer) {
                     if (paginated.pageData.length === 0) {
@@ -2824,19 +2771,36 @@
                 const files = e.target.files;
                 if (!files || files.length === 0) return;
 
-                Utils.showLoading('Membaca file...');
+                Utils.showLoading('Mengunggah file ke Google Drive...');
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     try {
-                        const base64 = await Utils.fileToBase64(file);
-                        this.fileTempStorage[prefix].push({
-                            fileId: 'FILE-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-                            fileName: file.name,
-                            fileUrl: base64,
-                            mimeType: file.type
+                        const base64Data = await Utils.fileToBase64(file);
+                        
+                        const response = await fetch(CONFIG.GAS_BACKUP_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'uploadFile',
+                                base64Data: base64Data,
+                                fileName: file.name,
+                                mimeType: file.type || 'application/octet-stream'
+                            })
                         });
+
+                        const resJson = await response.json();
+                        if (resJson && resJson.success && resJson.file) {
+                            this.fileTempStorage[prefix].push({
+                                fileId: resJson.file.fileId || ('DRV-' + Date.now()),
+                                fileName: resJson.file.fileName || file.name,
+                                fileUrl: resJson.file.fileUrl
+                            });
+                            Utils.showToast(`File ${file.name} berhasil diunggah!`, 'success');
+                        } else {
+                            throw new Error((resJson && resJson.message) || 'Gagal mengunggah file ke Google Drive');
+                        }
                     } catch (err) {
-                        Utils.showToast(`Gagal membaca ${file.name}: ${err.message}`, 'error');
+                        Utils.showToast(`Gagal mengunggah ${file.name}: ${err.message}`, 'error');
                     }
                 }
                 Utils.hideLoading();
@@ -2858,7 +2822,7 @@
                     <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs">
                         <div class="flex items-center gap-2 truncate flex-1">
                             <span class="material-symbols-outlined text-red-600 text-base">description</span>
-                            <span class="font-semibold text-slate-700 truncate">${f.fileName}</span>
+                            <a href="${f.fileUrl}" target="_blank" class="font-semibold text-blue-600 hover:underline truncate">${f.fileName}</a>
                         </div>
                         <button type="button" onclick="App.deleteFile('${prefix}', ${index})" class="text-slate-400 hover:text-red-600 p-1" title="Hapus File">
                             <span class="material-symbols-outlined text-base">close</span>
@@ -3063,7 +3027,6 @@
 
                 if (!nilai) return;
 
-                // Preserve form state before dropdown rebuild
                 const prefix = targetSelectId.split('-')[0];
                 const formId = prefix === 'so' ? 'form-sell-out' : (prefix === 'si' ? 'form-sell-in' : (prefix === 'bud' ? 'form-budget' : (prefix === 'kb' ? 'form-klaim-barang' : null)));
                 const formState = {};
@@ -3098,7 +3061,6 @@
 
                     this.populateDropdowns(prefix);
 
-                    // Restore form field values
                     for (let fieldId in formState) {
                         this.setSelectValue(fieldId, formState[fieldId]);
                         const el = document.getElementById(fieldId);
@@ -3107,7 +3069,6 @@
                         }
                     }
 
-                    // Automatically select newly added master item
                     this.setSelectValue(targetSelectId, nilai);
                     Utils.hideLoading();
                 } catch (err) {
@@ -3292,7 +3253,6 @@
                     const { error } = await supabaseClient.from(tableMap[menuKey]).delete().eq('id', id);
                     if (error) throw error;
 
-                    // Clean up corresponding Klaim Barang record if program is deleted
                     if (menuKey === 'sellOut') {
                         await supabaseClient.from('klaim_barang').delete().match({ sumber_program: 'SELL_OUT', ref_id_program: id });
                     } else if (menuKey === 'sellIn') {
@@ -3313,7 +3273,6 @@
             }
         };
 
-        // INITIALIZE ON LOAD
         window.addEventListener('DOMContentLoaded', () => {
             App.init();
         });
