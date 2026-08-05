@@ -17,7 +17,7 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- SheetJS (XLSX) for Excel Export -->
+    <!-- SheetJS (XLSX) for Excel Export & Import -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <!-- Supabase JS Client SDK -->
@@ -168,6 +168,7 @@
     <!-- TOAST NOTIFICATIONS CONTAINER -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
 
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="fixed inset-0 z-40 bg-slate-100 flex items-center justify-center p-4">
         <div class="card-modern w-full max-w-md p-8 border-t-4 border-t-[#D50000]">
             <div class="text-center mb-8">
@@ -207,8 +208,10 @@
         </div>
     </div>
 
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10 hidden" onclick="CACHE.toggleSidebar(false)"></div>
-    <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col z-20 transition-all duration-300 -translate-x-full md:translate-x-0 fixed md:relative h-full">
+
+    <!-- SIDEBAR & BACKDROP -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-20 hidden" onclick="CACHE.toggleSidebar(false)"></div>
+    <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col z-30 transition-all duration-300 -translate-x-full fixed left-0 top-0 h-full shadow-2xl">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-[#D50000] text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-md shadow-red-500/20 overflow-hidden p-1.5">
@@ -219,8 +222,8 @@
                     <p class="text-[10px] text-slate-400 font-medium">Program Monitoring</p>
                 </div>
             </div>
-            <button class="md:hidden text-slate-400 hover:text-slate-600" onclick="CACHE.toggleSidebar(false)">
-                <span class="material-symbols-outlined">close</span>
+            <button class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition flex items-center justify-center" onclick="CACHE.toggleSidebar(false)" title="Tutup Menu">
+                <span class="material-symbols-outlined text-xl">close</span>
             </button>
         </div>
 
@@ -278,11 +281,12 @@
         </div>
     </aside>
 
+    <!-- MAIN WRAPPER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <button class="md:hidden text-slate-600 hover:text-slate-900" onclick="CACHE.toggleSidebar()">
-                    <span class="material-symbols-outlined">menu</span>
+                <button class="text-slate-600 hover:text-[#D50000] p-2 rounded-xl hover:bg-red-50 transition flex items-center justify-center" onclick="CACHE.toggleSidebar()" title="Toggle Menu Navigasi">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
                 </button>
                 <h1 id="page-title" class="text-xl font-bold text-slate-800">Dashboard Overview</h1>
             </div>
@@ -294,7 +298,7 @@
                 </button>
                 <span class="text-xs text-slate-400 hidden sm:inline">|</span>
                 <span id="current-date-badge" class="text-xs font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-                    04 Aug 2026
+                    05 Aug 2026
                 </span>
             </div>
         </header>
@@ -382,6 +386,7 @@
                 </div>
             </section>
 
+            <!-- PAGE: SELL OUT -->
             <section id="view-sell-out" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -426,6 +431,15 @@
                                 <span class="material-symbols-outlined text-base">download</span>
                                 Excel
                             </button>
+                            <button onclick="App.downloadTemplate('sellOut')" class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="Unduh Template Excel">
+                                <span class="material-symbols-outlined text-base">description</span>
+                                Template
+                            </button>
+                            <button onclick="document.getElementById('import-excel-so').click()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="Import Data dari Excel">
+                                <span class="material-symbols-outlined text-base">upload_file</span>
+                                Import
+                            </button>
+                            <input type="file" id="import-excel-so" accept=".xlsx, .xls, .csv" class="hidden" onchange="App.handleImportExcel(event, 'sellOut')">
                             <button onclick="Utils.printData('Daftar Program Sell Out', 'table-sell-out')" class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
                                 <span class="material-symbols-outlined text-base">print</span>
                                 Print
@@ -467,6 +481,7 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-out-mobile"></div>
             </section>
 
+            <!-- PAGE: SELL IN -->
             <section id="view-sell-in" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -505,6 +520,15 @@
                                 <span class="material-symbols-outlined text-base">download</span>
                                 Excel
                             </button>
+                            <button onclick="App.downloadTemplate('sellIn')" class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="Unduh Template Excel">
+                                <span class="material-symbols-outlined text-base">description</span>
+                                Template
+                            </button>
+                            <button onclick="document.getElementById('import-excel-si').click()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="Import Data dari Excel">
+                                <span class="material-symbols-outlined text-base">upload_file</span>
+                                Import
+                            </button>
+                            <input type="file" id="import-excel-si" accept=".xlsx, .xls, .csv" class="hidden" onchange="App.handleImportExcel(event, 'sellIn')">
                             <button onclick="App.openModalSellIn()" class="px-4 py-2 bg-[#D50000] hover:bg-red-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-red-500/20 transition">
                                 <span class="material-symbols-outlined text-base">add</span>
                                 Tambah Sell In
@@ -540,6 +564,7 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-sell-in-mobile"></div>
             </section>
 
+            <!-- PAGE: KLAIM BARANG -->
             <section id="view-klaim-barang" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -608,6 +633,8 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-klaim-barang-mobile"></div>
             </section>
 
+
+            <!-- PAGE: BUDGET -->
             <section id="view-budget" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -668,6 +695,7 @@
                 <div class="card-modern p-4 md:hidden text-xs flex items-center justify-between" id="pagination-budget-mobile"></div>
             </section>
 
+            <!-- PAGE: MASTER -->
             <section id="view-master" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4">
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pilih Kategori Master</p>
@@ -700,6 +728,7 @@
                 </div>
             </section>
 
+            <!-- PAGE: USERS -->
             <section id="view-users" class="page-view space-y-5 hidden">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-bold text-slate-800">Daftar Pengguna Sistem</h3>
@@ -729,6 +758,7 @@
                 </div>
             </section>
 
+            <!-- PAGE: LOG HISTORY -->
             <section id="view-log-history" class="page-view space-y-5 hidden">
                 <div class="card-modern overflow-hidden">
                     <div class="p-4 border-b border-slate-100">
@@ -756,6 +786,7 @@
         </main>
     </div>
 
+    <!-- MODAL QUICK ADD MASTER -->
     <div id="modal-quick-add-master" class="fixed inset-0 z-[70] modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-sm bg-white overflow-hidden shadow-2xl">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -877,6 +908,7 @@
         </div>
     </div>
 
+    <!-- MODAL SELL IN -->
     <div id="modal-sell-in" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden bg-white">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -960,6 +992,7 @@
         </div>
     </div>
 
+    <!-- MODAL KLAIM BARANG -->
     <div id="modal-klaim-barang" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-lg bg-white overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -1104,6 +1137,7 @@
         </div>
     </div>
 
+    <!-- MODAL MASTER DATA -->
     <div id="modal-master" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
         <div class="card-modern w-full max-w-md bg-white overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -1196,6 +1230,7 @@
         </div>
     </div>
 
+
     <script>
         // CONFIGURATION OBJECT
         const CONFIG = {
@@ -1237,8 +1272,54 @@
             },
 
             sanitizeDate(val) {
-                if (!val || typeof val !== 'string' || val.trim() === '') return null;
-                return val.trim();
+                if (!val) return null;
+                if (val instanceof Date) {
+                    if (isNaN(val.getTime())) return null;
+                    const y = val.getFullYear();
+                    const m = String(val.getMonth() + 1).padStart(2, '0');
+                    const d = String(val.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                }
+                const str = String(val).trim();
+                if (!str) return null;
+
+                // Format YYYY-MM-DD atau YYYY/MM/DD
+                if (/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/.test(str)) {
+                    const parts = str.split(/[-\/]/);
+                    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                }
+
+                // Format DD-MM-YYYY atau DD/MM/YYYY atau D/M/YYYY
+                if (/^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/.test(str)) {
+                    const parts = str.split(/[-\/]/);
+                    let day = Number(parts[0]);
+                    let month = Number(parts[1]);
+                    const year = Number(parts[2]);
+
+                    // Deteksi jika format terbalik MM/DD/YYYY dari Excel
+                    if (month > 12 && day <= 12) {
+                        const temp = day;
+                        day = month;
+                        month = temp;
+                    }
+
+                    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    }
+                }
+
+                // Format Excel serial number date
+                if (!isNaN(str) && Number(str) > 20000 && Number(str) < 60000) {
+                    const d = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
+                    if (!isNaN(d.getTime())) {
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const dayStr = String(d.getDate()).padStart(2, '0');
+                        return `${y}-${m}-${dayStr}`;
+                    }
+                }
+
+                return str;
             },
 
             formatDate(dateStr) {
@@ -1255,6 +1336,10 @@
             formatMonthValue(val) {
                 if (!val) return '';
                 if (/^\d{4}-\d{2}$/.test(val)) return val;
+                if (/^\d{1,2}[-\/]\d{4}$/.test(val)) {
+                    const [m, y] = val.split(/[-\/]/);
+                    return `${y}-${m.padStart(2, '0')}`;
+                }
                 const d = new Date(val);
                 if (isNaN(d.getTime())) return '';
                 const yyyy = d.getFullYear();
@@ -1262,11 +1347,49 @@
                 return `${yyyy}-${mm}`;
             },
 
+            parsePeriodeBulan(val) {
+                if (!val) return '';
+                if (val instanceof Date) {
+                    if (isNaN(val.getTime())) return '';
+                    return `${val.getFullYear()}-${String(val.getMonth() + 1).padStart(2, '0')}`;
+                }
+                const str = String(val).trim();
+                if (!str) return '';
+
+                // Format MM-YYYY or MM/YYYY (Contoh: 08-2026 atau 8/2026)
+                if (/^\d{1,2}[-\/]\d{4}$/.test(str)) {
+                    const parts = str.split(/[-\/]/);
+                    return `${parts[1]}-${parts[0].padStart(2, '0')}`;
+                }
+                // Format YYYY-MM or YYYY/MM
+                if (/^\d{4}[-\/]\d{1,2}$/.test(str)) {
+                    const parts = str.split(/[-\/]/);
+                    return `${parts[0]}-${parts[1].padStart(2, '0')}`;
+                }
+                // Format YYYY-MM-DD or YYYY/MM/DD
+                if (/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/.test(str)) {
+                    const parts = str.split(/[-\/]/);
+                    return `${parts[0]}-${parts[1].padStart(2, '0')}`;
+                }
+                // Format Excel Serial Number
+                if (!isNaN(str) && Number(str) > 20000 && Number(str) < 60000) {
+                    const d = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
+                    if (!isNaN(d.getTime())) {
+                        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    }
+                }
+                return str;
+            },
+
             formatPeriodeBulan(val) {
                 if (!val) return '-';
                 let dateObj = null;
-                if (/^\d{4}-\d{2}$/.test(val)) {
-                    const [year, month] = val.split('-');
+                const str = String(val).trim();
+                if (/^\d{1,2}[-\/]\d{4}$/.test(str)) {
+                    const [month, year] = str.split(/[-\/]/);
+                    dateObj = new Date(Number(year), Number(month) - 1, 1);
+                } else if (/^\d{4}[-\/]\d{1,2}$/.test(str)) {
+                    const [year, month] = str.split(/[-\/]/);
                     dateObj = new Date(Number(year), Number(month) - 1, 1);
                 } else {
                     dateObj = new Date(val);
@@ -1587,9 +1710,8 @@
                 const targetView = document.getElementById(`view-${pageName}`);
                 if (targetView) targetView.classList.remove('hidden');
 
-                if (window.innerWidth < 768) {
-                    CACHE.toggleSidebar(false);
-                }
+                // Auto hide sidebar automatically when any menu item is selected
+                CACHE.toggleSidebar(false);
 
                 this.updateNavActive(pageName);
                 this.renderCurrentPage();
@@ -1824,6 +1946,7 @@
                     totalEntries,
                     totalPages,
                     currentPage: st.currentPage,
+                    pageSize: st.pageSize,
                     startIdx: totalEntries > 0 ? startIdx + 1 : 0,
                     endIdx: Math.min(endIdx, totalEntries)
                 };
@@ -1875,6 +1998,7 @@
                 if (typeof callback === 'function') callback();
             }
         };
+
 
         const App = {
             fileTempStorage: { so: [], si: [] },
@@ -2004,7 +2128,7 @@
                     tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell Out.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
+                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2195,14 +2319,14 @@
                 const search = document.getElementById('search-sell-in').value;
 
                 const filtered = DataTable.applyFilterAndSearch(CACHE.sellIn, filters, search, ['nama_program', 'nomor_skp', 'nama_brand', 'id']);
-                const paginated = DataTable.paginate(filtered, 'sellIn');
+                const paginated = DataTable.paginate(filtered, 'si');
 
                 const tbody = document.getElementById('tbody-sell-in');
                 if (paginated.pageData.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell In.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
+                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2413,10 +2537,7 @@
                     tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400">Tidak ada data klaim barang (Ganti Produk).</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
-                        const filesList = Array.isArray(r.files_skp) ? r.files_skp : [];
-                        const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
-
+                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2579,7 +2700,7 @@
                     tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">Tidak ada data pemakaian budget.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * paginated.pageSize + index + 1;
+                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -3270,6 +3391,296 @@
                     Utils.hideLoading();
                     Utils.showToast('Gagal menghapus: ' + err.message, 'error');
                 }
+            },
+
+            downloadTemplate(type) {
+                try {
+                    let sampleData = [];
+                    let filename = "";
+
+                    if (type === 'sellOut') {
+                        filename = "Template_Import_Program_Sell_Out.xlsx";
+                        sampleData = [{
+                            "Periode Bulan (MM-YYYY)": "08-2026",
+                            "Channel": "Indomaret",
+                            "Nama Grup Brand": "Group Nutrisi",
+                            "Nama Brand": "Brand Dancow",
+                            "Tanggal Mulai Promo (DD-MM-YYYY)": "01-08-2026",
+                            "Tanggal Berakhir Promo (DD-MM-YYYY)": "15-08-2026",
+                            "Promo / Nama Event": "Diskon Kemerdekaan 17%",
+                            "Nomor SKP": "SKP/2026/08/001",
+                            "Deskripsi Promo": "Diskon harga beli 17% untuk produk Dancow 800g",
+                            "Budget SKP (Rp)": 10000000,
+                            "Nominal Klaim (Rp)": 8500000,
+                            "Mekanisme Klaim": "Potongan Tagihan",
+                            "Metode Klaim": "CN (Credit Note)",
+                            "Status Klaim": "Draft / Belum Diklaim",
+                            "Tanggal Diklaim (DD-MM-YYYY)": "16-08-2026"
+                        }];
+                    } else if (type === 'sellIn') {
+                        filename = "Template_Import_Program_Sell_In.xlsx";
+                        sampleData = [{
+                            "Periode Bulan (MM-YYYY)": "08-2026",
+                            "Nama Program": "Display Contest Q3",
+                            "Nama Grup Brand": "Group Nutrisi",
+                            "Nama Brand": "Brand Dancow",
+                            "Target Sales (Rp)": 50000000,
+                            "Cashback (Rp)": 5000000,
+                            "Nominal Klaim (Rp)": 5000000,
+                            "Pencapaian / Nilai ACH (%)": 100,
+                            "Status Pencapaian": "Tercapai",
+                            "Mekanisme Klaim": "Ganti Produk",
+                            "Metode Klaim": "CN (Credit Note)",
+                            "Status Klaim": "Draft / Belum Diklaim",
+                            "Keterangan": "Bonus produk untuk toko pencapaian 100%"
+                        }];
+                    }
+
+                    const ws = XLSX.utils.json_to_sheet(sampleData);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Template");
+                    XLSX.writeFile(wb, filename);
+                    Utils.showToast('Template Excel berhasil diunduh.', 'success');
+                } catch (err) {
+                    Utils.showToast('Gagal mengunduh template: ' + err.message, 'error');
+                }
+            },
+
+            async autoCreateMissingMaster(category, value) {
+                if (!value || typeof value !== 'string') return;
+                const valClean = value.trim();
+                if (!valClean || valClean === '-' || valClean === '__ADD_NEW__') return;
+
+                const existingList = CACHE.master[category] || [];
+                const exists = existingList.some(item => item.nilai.toLowerCase() === valClean.toLowerCase());
+                if (!exists) {
+                    const newId = 'MST-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+                    const payload = { id: newId, kategori: category, nilai: valClean, urutan: 1, status_aktif: true };
+                    try {
+                        await supabaseClient.from('master').insert([payload]);
+                        CACHE.masterRaw.push(payload);
+                        CACHE.processMasterGroup(CACHE.masterRaw);
+                        triggerSheetsBackup('MASTER', 'UPSERT', payload);
+                    } catch (e) {
+                        console.warn('Auto create master warning:', e);
+                    }
+                }
+            },
+
+            async handleImportExcel(event, type) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                Utils.showLoading('Membaca dan mengimpor file Excel...');
+                const reader = new FileReader();
+
+                reader.onload = async (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array', cellDates: true, dateNF: 'yyyy-mm-dd' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
+
+                        if (!rows || rows.length === 0) {
+                            Utils.hideLoading();
+                            Utils.showToast('File Excel kosong atau format tidak sesuai.', 'error');
+                            event.target.value = '';
+                            return;
+                        }
+
+                        let successCount = 0;
+                        let errorCount = 0;
+                        let errorLog = [];
+
+                        for (let i = 0; i < rows.length; i++) {
+                            const rawRow = rows[i];
+                            // Normalisasi header agar tidak bermasalah dengan spasi berlebih
+                            const row = {};
+                            Object.keys(rawRow).forEach(k => {
+                                row[k.trim()] = rawRow[k];
+                            });
+
+                            const recordId = (type === 'sellOut' ? 'SOUT-' : 'SIN-') + Date.now() + '-' + i;
+
+                            try {
+                                if (type === 'sellOut') {
+                                    const periodeRaw = row['Periode Bulan (MM-YYYY)'] || row['Periode Bulan (YYYY-MM)'] || row['periode_bulan'] || row['Periode Bulan'] || '';
+                                    const periode = Utils.parsePeriodeBulan(periodeRaw);
+                                    const eventName = String(row['Promo / Nama Event'] || row['promo_nama_event'] || row['Promo Nama Event'] || '').trim();
+
+                                    if (!periode) {
+                                        errorCount++;
+                                        errorLog.push(`Baris ${i + 2}: Periode Bulan kosong/tidak valid`);
+                                        continue;
+                                    }
+                                    if (!eventName) {
+                                        errorCount++;
+                                        errorLog.push(`Baris ${i + 2}: Promo / Nama Event kosong`);
+                                        continue;
+                                    }
+
+                                    const channel = String(row['Channel'] || row['channel'] || '').trim();
+                                    const grupBrand = String(row['Nama Grup Brand'] || row['nama_grup_brand'] || '').trim();
+                                    const brand = String(row['Nama Brand'] || row['nama_brand'] || '').trim();
+                                    const mekanisme = String(row['Mekanisme Klaim'] || row['mekanisme_klaim'] || '').trim();
+                                    const metode = String(row['Metode Klaim'] || row['metode_klaim'] || '').trim();
+                                    const statusKlaim = String(row['Status Klaim'] || row['status_klaim'] || 'Draft / Belum Diklaim').trim();
+
+                                    // Otomatis buat Master jika belum ada
+                                    if (channel) await this.autoCreateMissingMaster('CHANNEL', channel);
+                                    if (grupBrand) await this.autoCreateMissingMaster('NAMA_GRUP_BRAND', grupBrand);
+                                    if (brand) await this.autoCreateMissingMaster('NAMA_BRAND', brand);
+                                    if (mekanisme) await this.autoCreateMissingMaster('MEKANISME_KLAIM', mekanisme);
+                                    if (metode) await this.autoCreateMissingMaster('METODE_KLAIM', metode);
+                                    if (statusKlaim) await this.autoCreateMissingMaster('STATUS_KLAIM', statusKlaim);
+
+                                    const payload = {
+                                        id: recordId,
+                                        periode_bulan: periode,
+                                        channel: channel,
+                                        nama_grup_brand: grupBrand,
+                                        nama_brand: brand,
+                                        tanggal_mulai: Utils.sanitizeDate(row['Tanggal Mulai Promo (DD-MM-YYYY)'] || row['Tanggal Mulai Promo (YYYY-MM-DD)'] || row['tanggal_mulai'] || row['Tanggal Mulai Promo']),
+                                        tanggal_berakhir: Utils.sanitizeDate(row['Tanggal Berakhir Promo (DD-MM-YYYY)'] || row['Tanggal Berakhir Promo (YYYY-MM-DD)'] || row['tanggal_berakhir'] || row['Tanggal Berakhir Promo']),
+                                        promo_nama_event: eventName,
+                                        nomor_skp: String(row['Nomor SKP'] || row['nomor_skp'] || '').trim(),
+                                        deskripsi_promo: String(row['Deskripsi Promo'] || row['deskripsi_promo'] || '').trim(),
+                                        budget_skp: Utils.parseCurrencyValue(row['Budget SKP (Rp)'] || row['budget_skp'] || row['Budget SKP']),
+                                        nominal_klaim: Utils.parseCurrencyValue(row['Nominal Klaim (Rp)'] || row['nominal_klaim'] || row['Nominal Klaim']),
+                                        mekanisme_klaim: mekanisme,
+                                        metode_klaim: metode,
+                                        status_klaim: statusKlaim,
+                                        tanggal_diklaim: Utils.sanitizeDate(row['Tanggal Diklaim (DD-MM-YYYY)'] || row['Tanggal Diklaim (YYYY-MM-DD)'] || row['tanggal_diklaim'] || row['Tanggal Diklaim']),
+                                        files_skp: [],
+                                        updated_at: new Date().toISOString()
+                                    };
+
+                                    const { error } = await supabaseClient.from('sell_out').insert([payload]);
+                                    if (error) throw error;
+
+                                    if (payload.mekanisme_klaim === 'Ganti Produk') {
+                                        const klaimObj = {
+                                            id: 'KLM-' + Date.now() + '-' + i,
+                                            sumber_program: 'SELL_OUT',
+                                            ref_id_program: recordId,
+                                            periode_bulan: payload.periode_bulan,
+                                            nama_grup_brand: payload.nama_grup_brand,
+                                            nama_brand: payload.nama_brand,
+                                            files_skp: [],
+                                            nomor_skp: payload.nomor_skp || '',
+                                            nominal_klaim: payload.nominal_klaim,
+                                            status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
+                                            updated_at: new Date().toISOString()
+                                        };
+                                        await supabaseClient.from('klaim_barang').insert([klaimObj]);
+                                        triggerSheetsBackup('KLAIM_BARANG', 'UPSERT', klaimObj);
+                                    }
+
+                                    triggerSheetsBackup('SELL_OUT', 'UPSERT', payload);
+                                    successCount++;
+                                } else if (type === 'sellIn') {
+                                    const periodeRaw = row['Periode Bulan (MM-YYYY)'] || row['Periode Bulan (YYYY-MM)'] || row['periode_bulan'] || row['Periode Bulan'] || '';
+                                    const periode = Utils.parsePeriodeBulan(periodeRaw);
+                                    const progName = String(row['Nama Program'] || row['nama_program'] || '').trim();
+
+                                    if (!periode) {
+                                        errorCount++;
+                                        errorLog.push(`Baris ${i + 2}: Periode Bulan kosong/tidak valid`);
+                                        continue;
+                                    }
+                                    if (!progName) {
+                                        errorCount++;
+                                        errorLog.push(`Baris ${i + 2}: Nama Program kosong`);
+                                        continue;
+                                    }
+
+                                    const grupBrand = String(row['Nama Grup Brand'] || row['nama_grup_brand'] || '').trim();
+                                    const brand = String(row['Nama Brand'] || row['nama_brand'] || '').trim();
+                                    const statusAch = String(row['Status Pencapaian'] || row['status_pencapaian'] || 'Tercapai').trim();
+                                    const mekanisme = String(row['Mekanisme Klaim'] || row['mekanisme_klaim'] || '').trim();
+                                    const metode = String(row['Metode Klaim'] || row['metode_klaim'] || '').trim();
+                                    const statusKlaim = String(row['Status Klaim'] || row['status_klaim'] || 'Draft / Belum Diklaim').trim();
+
+                                    // Otomatis buat Master jika belum ada
+                                    if (progName) await this.autoCreateMissingMaster('NAMA_PROGRAM', progName);
+                                    if (grupBrand) await this.autoCreateMissingMaster('NAMA_GRUP_BRAND', grupBrand);
+                                    if (brand) await this.autoCreateMissingMaster('NAMA_BRAND', brand);
+                                    if (statusAch) await this.autoCreateMissingMaster('STATUS_PENCAPAIAN', statusAch);
+                                    if (mekanisme) await this.autoCreateMissingMaster('MEKANISME_KLAIM', mekanisme);
+                                    if (metode) await this.autoCreateMissingMaster('METODE_KLAIM', metode);
+                                    if (statusKlaim) await this.autoCreateMissingMaster('STATUS_KLAIM', statusKlaim);
+
+                                    const payload = {
+                                        id: recordId,
+                                        periode_bulan: periode,
+                                        nama_program: progName,
+                                        nama_grup_brand: grupBrand,
+                                        nama_brand: brand,
+                                        target: Utils.parseCurrencyValue(row['Target Sales (Rp)'] || row['target'] || row['Target Sales']),
+                                        cashback: Utils.parseCurrencyValue(row['Cashback (Rp)'] || row['cashback'] || row['Cashback']),
+                                        nominal_klaim: Utils.parseCurrencyValue(row['Nominal Klaim (Rp)'] || row['nominal_klaim'] || row['Nominal Klaim']),
+                                        nilai_ach: Number(row['Pencapaian / Nilai ACH (%)'] || row['nilai_ach'] || row['Pencapaian']) || 0,
+                                        status_pencapaian: statusAch,
+                                        mekanisme_klaim: mekanisme,
+                                        metode_klaim: metode,
+                                        status_klaim: statusKlaim,
+                                        keterangan: String(row['Keterangan'] || row['keterangan'] || '').trim(),
+                                        files_skp: [],
+                                        updated_at: new Date().toISOString()
+                                    };
+
+                                    const { error } = await supabaseClient.from('sell_in').insert([payload]);
+                                    if (error) throw error;
+
+                                    if (payload.mekanisme_klaim === 'Ganti Produk') {
+                                        const klaimObj = {
+                                            id: 'KLM-' + Date.now() + '-' + i,
+                                            sumber_program: 'SELL_IN',
+                                            ref_id_program: recordId,
+                                            periode_bulan: payload.periode_bulan,
+                                            nama_grup_brand: payload.nama_grup_brand,
+                                            nama_brand: payload.nama_brand,
+                                            files_skp: [],
+                                            nomor_skp: payload.nomor_skp || '',
+                                            nominal_klaim: payload.nominal_klaim,
+                                            status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
+                                            updated_at: new Date().toISOString()
+                                        };
+                                        await supabaseClient.from('klaim_barang').insert([klaimObj]);
+                                        triggerSheetsBackup('KLAIM_BARANG', 'UPSERT', klaimObj);
+                                    }
+
+                                    triggerSheetsBackup('SELL_IN', 'UPSERT', payload);
+                                    successCount++;
+                                }
+                            } catch (errRow) {
+                                errorCount++;
+                                errorLog.push(`Baris ${i + 2}: ${errRow.message}`);
+                            }
+                        }
+
+                        Utils.hideLoading();
+                        if (errorLog.length > 0) {
+                            console.warn("Log error import Excel:", errorLog);
+                        }
+                        Utils.showToast(`Import selesai: ${successCount} berhasil, ${errorCount} gagal.`, successCount > 0 ? (errorCount > 0 ? 'warning' : 'success') : 'error');
+                        await CACHE.refreshCache();
+                        event.target.value = '';
+                    } catch (err) {
+                        Utils.hideLoading();
+                        Utils.showToast('Gagal memproses file Excel: ' + err.message, 'error');
+                        event.target.value = '';
+                    }
+                };
+
+                reader.onerror = () => {
+                    Utils.hideLoading();
+                    Utils.showToast('Gagal membaca file.', 'error');
+                    event.target.value = '';
+                };
+
+                reader.readAsArrayBuffer(file);
             }
         };
 
