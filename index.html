@@ -2538,6 +2538,9 @@
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
                         const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
+                        const filesList = Array.isArray(r.files_skp) ? r.files_skp : [];
+                        const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
+
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
