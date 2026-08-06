@@ -208,7 +208,6 @@
         </div>
     </div>
 
-
     <!-- SIDEBAR & BACKDROP -->
     <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-20 hidden" onclick="CACHE.toggleSidebar(false)"></div>
     <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col z-30 transition-all duration-300 -translate-x-full fixed left-0 top-0 h-full shadow-2xl">
@@ -298,7 +297,7 @@
                 </button>
                 <span class="text-xs text-slate-400 hidden sm:inline">|</span>
                 <span id="current-date-badge" class="text-xs font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-                    05 Aug 2026
+                    06 Aug 2026
                 </span>
             </div>
         </header>
@@ -614,11 +613,12 @@
                                     <th class="p-3">Sumber / Periode</th>
                                     <th class="p-3">Grup & Brand</th>
                                     <th class="p-3">Nomor & File SKP</th>
+                                    <th class="p-3">Metode Klaim</th>
                                     <th class="p-3">Nominal Klaim</th>
-                                    <th class="p-3">Nominal HET</th>
-                                    <th class="p-3">Nominal HPP</th>
-                                    <th class="p-3">Selisih HET</th>
-                                    <th class="p-3">PO CSA</th>
+                                    <th class="p-3">Total HET</th>
+                                    <th class="p-3">Total HPP</th>
+                                    <th class="p-3">Selisih</th>
+                                    <th class="p-3">Daftar PO CSA</th>
                                     <th class="p-3">Status Klaim</th>
                                     <th class="p-3 text-center">Aksi</th>
                                 </tr>
@@ -994,7 +994,7 @@
 
     <!-- MODAL KLAIM BARANG -->
     <div id="modal-klaim-barang" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 hidden">
-        <div class="card-modern w-full max-w-lg bg-white overflow-hidden">
+        <div class="card-modern w-full max-w-2xl max-h-[90vh] flex flex-col bg-white overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <h3 class="text-sm font-bold text-slate-800">Update Klaim Barang (Ganti Produk)</h3>
                 <button onclick="Utils.closeModal('modal-klaim-barang')" class="text-slate-400 hover:text-slate-600">
@@ -1002,11 +1002,12 @@
                 </button>
             </div>
 
-            <form id="form-klaim-barang" onsubmit="App.saveKlaimBarang(event)" class="p-6 space-y-4 text-xs">
+            <form id="form-klaim-barang" onsubmit="App.saveKlaimBarang(event)" class="p-6 overflow-y-auto space-y-4 text-xs flex-1">
                 <input type="hidden" id="kb-id">
                 <input type="hidden" id="kb-nominal-klaim-val">
+                <input type="hidden" id="kb-metode-klaim-val">
 
-                <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <div>
                         <span class="block text-[10px] text-slate-400 font-semibold uppercase">Sumber Program</span>
                         <span id="kb-sumber-lbl" class="font-bold text-slate-800">-</span>
@@ -1016,34 +1017,44 @@
                         <span id="kb-ref-id-lbl" class="font-mono font-bold text-slate-800">-</span>
                     </div>
                     <div>
-                        <span class="block text-[10px] text-slate-400 font-semibold uppercase">Brand</span>
-                        <span id="kb-brand-lbl" class="font-semibold text-slate-700">-</span>
+                        <span class="block text-[10px] text-slate-400 font-semibold uppercase">Metode Klaim</span>
+                        <span id="kb-metode-lbl" class="font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 inline-block mt-0.5">-</span>
                     </div>
                     <div>
                         <span class="block text-[10px] text-slate-400 font-semibold uppercase">Nominal Klaim</span>
-                        <span id="kb-nominal-klaim-lbl" class="font-bold text-blue-600">Rp 0</span>
+                        <span id="kb-nominal-klaim-lbl" class="font-bold text-blue-600">-</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <!-- PO CSA ENTRIES DYNAMIC SECTION -->
+                <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <span class="font-bold text-slate-700 text-xs flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-red-600 text-base">receipt_long</span>
+                            Rincian Nomor PO CSA, HET & HPP
+                        </span>
+                        <button type="button" onclick="App.addPoCsaRow()" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-[#D50000] font-semibold rounded-lg text-[11px] flex items-center gap-1 transition">
+                            <span class="material-symbols-outlined text-sm">add</span> Tambah PO CSA
+                        </button>
+                    </div>
+
+                    <div id="kb-po-csa-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- TOTALS & SELISIH SUMMARY -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-100 p-3 rounded-xl border border-slate-200">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Nominal HET (Rp) *</label>
-                        <input type="text" inputmode="numeric" id="kb-nominal-het" required oninput="Utils.formatCurrencyInput(this); App.calculateKlaimSelisih();" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        <span class="block text-[10px] text-slate-500 font-semibold uppercase">Total Nominal HET</span>
+                        <span id="kb-total-het-lbl" class="font-bold text-slate-800 text-xs">Rp 0</span>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Nominal HPP (Rp) *</label>
-                        <input type="text" inputmode="numeric" id="kb-nominal-hpp" required oninput="Utils.formatCurrencyInput(this)" placeholder="0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        <span class="block text-[10px] text-slate-500 font-semibold uppercase">Total Nominal HPP</span>
+                        <span id="kb-total-hpp-lbl" class="font-bold text-slate-800 text-xs">Rp 0</span>
                     </div>
-                </div>
-
-                <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 flex items-center justify-between">
-                    <span class="font-semibold text-amber-800">Selisih HET (Nominal HET - Klaim):</span>
-                    <span id="kb-selisih-lbl" class="font-bold text-amber-900 text-sm">Rp 0</span>
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Nomor PO CSA</label>
-                    <input type="text" id="kb-nomor-po-csa" placeholder="Masukkan nomor PO CSA..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    <div id="kb-selisih-box" class="p-2 rounded-lg bg-amber-50 border border-amber-200">
+                        <span id="kb-selisih-title-lbl" class="block text-[10px] font-bold text-amber-800 uppercase">Selisih HET</span>
+                        <span id="kb-selisih-lbl" class="font-bold text-amber-900 text-sm">Rp 0</span>
+                    </div>
                 </div>
 
                 <div>
@@ -1158,6 +1169,7 @@
                         <option value="CHANNEL">Channel</option>
                         <option value="MEKANISME_KLAIM">Mekanisme Klaim</option>
                         <option value="METODE_KLAIM">Metode Klaim</option>
+                        <option value="METODE_KLAIM_GANTI_PRODUK">Metode Klaim (Ganti Produk)</option>
                         <option value="STATUS_KLAIM">Status Klaim</option>
                         <option value="STATUS_PENCAPAIAN">Status Pencapaian</option>
                         <option value="NAMA_PROGRAM">Nama Program</option>
@@ -1240,8 +1252,8 @@
             APP_TITLE: 'Monitoring Program Supplier Suryatokoku',
             MASTER_KEYS: [
                 'NAMA_GRUP_BRAND', 'NAMA_BRAND', 'CHANNEL', 'MEKANISME_KLAIM',
-                'METODE_KLAIM', 'STATUS_KLAIM', 'STATUS_PENCAPAIAN', 'NAMA_PROGRAM',
-                'STATUS_PEMAKAIAN_BUDGET'
+                'METODE_KLAIM', 'METODE_KLAIM_GANTI_PRODUK', 'STATUS_KLAIM',
+                'STATUS_PENCAPAIAN', 'NAMA_PROGRAM', 'STATUS_PEMAKAIAN_BUDGET'
             ],
             BADGE_COLORS: {
                 'Selesai / Paid': 'bg-emerald-100 text-emerald-700',
@@ -1283,20 +1295,17 @@
                 const str = String(val).trim();
                 if (!str) return null;
 
-                // Format YYYY-MM-DD atau YYYY/MM/DD
                 if (/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/.test(str)) {
                     const parts = str.split(/[-\/]/);
                     return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
                 }
 
-                // Format DD-MM-YYYY atau DD/MM/YYYY atau D/M/YYYY
                 if (/^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/.test(str)) {
                     const parts = str.split(/[-\/]/);
                     let day = Number(parts[0]);
                     let month = Number(parts[1]);
                     const year = Number(parts[2]);
 
-                    // Deteksi jika format terbalik MM/DD/YYYY dari Excel
                     if (month > 12 && day <= 12) {
                         const temp = day;
                         day = month;
@@ -1308,7 +1317,6 @@
                     }
                 }
 
-                // Format Excel serial number date
                 if (!isNaN(str) && Number(str) > 20000 && Number(str) < 60000) {
                     const d = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
                     if (!isNaN(d.getTime())) {
@@ -1356,22 +1364,18 @@
                 const str = String(val).trim();
                 if (!str) return '';
 
-                // Format MM-YYYY or MM/YYYY (Contoh: 08-2026 atau 8/2026)
                 if (/^\d{1,2}[-\/]\d{4}$/.test(str)) {
                     const parts = str.split(/[-\/]/);
                     return `${parts[1]}-${parts[0].padStart(2, '0')}`;
                 }
-                // Format YYYY-MM or YYYY/MM
                 if (/^\d{4}[-\/]\d{1,2}$/.test(str)) {
                     const parts = str.split(/[-\/]/);
                     return `${parts[0]}-${parts[1].padStart(2, '0')}`;
                 }
-                // Format YYYY-MM-DD or YYYY/MM/DD
                 if (/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/.test(str)) {
                     const parts = str.split(/[-\/]/);
                     return `${parts[0]}-${parts[1].padStart(2, '0')}`;
                 }
-                // Format Excel Serial Number
                 if (!isNaN(str) && Number(str) > 20000 && Number(str) < 60000) {
                     const d = new Date((Number(str) - (25567 + 2)) * 86400 * 1000);
                     if (!isNaN(d.getTime())) {
@@ -1589,7 +1593,6 @@
                         return;
                     }
 
-                    // Order Ascending by created_at so new records are appended at the bottom
                     const [resMaster, resSellOut, resSellIn, resKlaim, resBudget] = await Promise.all([
                         supabaseClient.from('master').select('*').order('urutan', { ascending: true }),
                         supabaseClient.from('sell_out').select('*').order('created_at', { ascending: true }),
@@ -1600,6 +1603,17 @@
 
                     if (resMaster.data) {
                         this.masterRaw = resMaster.data;
+
+                        const hasGP = this.masterRaw.some(x => x.kategori === 'METODE_KLAIM_GANTI_PRODUK');
+                        if (!hasGP && supabaseClient) {
+                            const defaultGP = [
+                                { id: 'MST-GP-1', kategori: 'METODE_KLAIM_GANTI_PRODUK', nilai: 'Ganti Produk HET', urutan: 1, status_aktif: true },
+                                { id: 'MST-GP-2', kategori: 'METODE_KLAIM_GANTI_PRODUK', nilai: 'Ganti Produk NET', urutan: 2, status_aktif: true }
+                            ];
+                            await supabaseClient.from('master').insert(defaultGP);
+                            this.masterRaw.push(...defaultGP);
+                        }
+
                         this.processMasterGroup(this.masterRaw);
                     }
                     if (resSellOut.data) this.sellOut = resSellOut.data;
@@ -1653,7 +1667,7 @@
                 if (index !== -1) {
                     list[index] = updatedItem;
                 } else {
-                    list.push(updatedItem); // Append at the bottom for ascending order
+                    list.push(updatedItem);
                 }
             },
 
@@ -1710,7 +1724,6 @@
                 const targetView = document.getElementById(`view-${pageName}`);
                 if (targetView) targetView.classList.remove('hidden');
 
-                // Auto hide sidebar automatically when any menu item is selected
                 CACHE.toggleSidebar(false);
 
                 this.updateNavActive(pageName);
@@ -1828,7 +1841,6 @@
                         }
                     }
 
-                    // Native SHA-256 Hash Helper
                     const msgUint8 = new TextEncoder().encode(p);
                     const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
                     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -1901,7 +1913,7 @@
         const DataTable = {
             state: {},
 
-            initTableState(key, pageSize = 10) {
+            initTableState(key, pageSize = 999999) {
                 if (!this.state[key]) {
                     this.state[key] = { currentPage: 1, pageSize: pageSize };
                 }
@@ -1933,22 +1945,18 @@
                 this.initTableState(pageKey);
                 const st = this.state[pageKey];
                 const totalEntries = dataArray.length;
-                const totalPages = Math.ceil(totalEntries / st.pageSize) || 1;
+                const totalPages = 1;
 
-                if (st.currentPage > totalPages) st.currentPage = totalPages;
-
-                const startIdx = (st.currentPage - 1) * st.pageSize;
-                const endIdx = startIdx + st.pageSize;
-                const pageData = dataArray.slice(startIdx, endIdx);
+                st.currentPage = 1;
+                const pageData = dataArray;
 
                 return {
                     pageData,
                     totalEntries,
                     totalPages,
-                    currentPage: st.currentPage,
-                    pageSize: st.pageSize,
-                    startIdx: totalEntries > 0 ? startIdx + 1 : 0,
-                    endIdx: Math.min(endIdx, totalEntries)
+                    currentPage: 1,
+                    startIdx: totalEntries > 0 ? 1 : 0,
+                    endIdx: totalEntries
                 };
             },
 
@@ -1956,49 +1964,14 @@
                 const container = document.getElementById(containerId);
                 if (!container) return;
 
-                const { totalEntries, totalPages, currentPage, startIdx, endIdx } = paginatedResult;
-
-                let html = `<div>Menampilkan <b>${startIdx}</b> - <b>${endIdx}</b> dari <b>${totalEntries}</b> data</div>`;
-                html += `<div class="flex items-center gap-1">`;
-
-                html += `
-                    <button onclick="DataTable.changePage('${pageKey}', ${currentPage - 1}, ${onPageChange})" 
-                            ${currentPage === 1 ? 'disabled class="px-2 py-1 bg-slate-100 text-slate-300 rounded cursor-not-allowed"' : 'class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded"'}>
-                        <span class="material-symbols-outlined text-sm">chevron_left</span>
-                    </button>
-                `;
-
-                for (let i = 1; i <= totalPages; i++) {
-                    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                        html += `
-                            <button onclick="DataTable.changePage('${pageKey}', ${i}, ${onPageChange})" 
-                                    class="px-3 py-1 text-xs rounded font-semibold ${i === currentPage ? 'bg-[#D50000] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
-                                ${i}
-                            </button>
-                        `;
-                    } else if (i === currentPage - 2 || i === currentPage + 2) {
-                        html += `<span class="px-1 text-slate-400">...</span>`;
-                    }
-                }
-
-                html += `
-                    <button onclick="DataTable.changePage('${pageKey}', ${currentPage + 1}, ${onPageChange})" 
-                            ${currentPage === totalPages || totalPages === 0 ? 'disabled class="px-2 py-1 bg-slate-100 text-slate-300 rounded cursor-not-allowed"' : 'class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded"'}>
-                        <span class="material-symbols-outlined text-sm">chevron_right</span>
-                    </button>
-                `;
-
-                html += `</div>`;
-                container.innerHTML = html;
+                const { totalEntries } = paginatedResult;
+                container.innerHTML = `<div class="w-full text-center text-slate-500 font-semibold py-1">Total Keseluruhan: <b>${totalEntries}</b> Data Program</div>`;
             },
 
             changePage(pageKey, newPage, callback) {
-                if (newPage < 1) return;
-                this.state[pageKey].currentPage = newPage;
                 if (typeof callback === 'function') callback();
             }
         };
-
 
         const App = {
             fileTempStorage: { so: [], si: [] },
@@ -2128,7 +2101,7 @@
                     tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell Out.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
+                        const rowNum = index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2279,6 +2252,7 @@
                             nama_brand: payload.nama_brand,
                             files_skp: payload.files_skp,
                             nomor_skp: payload.nomor_skp || '',
+                            metode_klaim: payload.metode_klaim,
                             nominal_klaim: payload.nominal_klaim,
                             status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
                             updated_at: new Date().toISOString()
@@ -2319,14 +2293,14 @@
                 const search = document.getElementById('search-sell-in').value;
 
                 const filtered = DataTable.applyFilterAndSearch(CACHE.sellIn, filters, search, ['nama_program', 'nomor_skp', 'nama_brand', 'id']);
-                const paginated = DataTable.paginate(filtered, 'si');
+                const paginated = DataTable.paginate(filtered, 'sellIn');
 
                 const tbody = document.getElementById('tbody-sell-in');
                 if (paginated.pageData.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Tidak ada data program Sell In.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
+                        const rowNum = index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2472,6 +2446,7 @@
                             nama_brand: payload.nama_brand,
                             files_skp: payload.files_skp,
                             nomor_skp: payload.nomor_skp || '',
+                            metode_klaim: payload.metode_klaim,
                             nominal_klaim: payload.nominal_klaim,
                             status_klaim: payload.status_klaim || 'Draft / Belum Diklaim',
                             updated_at: new Date().toISOString()
@@ -2506,17 +2481,66 @@
                 const statusSelect = document.getElementById(`${prefix}-status`);
                 const hint = document.getElementById(`${prefix}-status-hint`);
 
-                if (!mekaSelect || !statusSelect) return;
+                if (!mekaSelect) return;
 
-                if (mekaSelect.value === 'Ganti Produk') {
-                    statusSelect.disabled = true;
-                    statusSelect.classList.add('opacity-60', 'cursor-not-allowed', 'bg-slate-200');
-                    if (hint) hint.classList.remove('hidden');
-                } else {
-                    statusSelect.disabled = false;
-                    statusSelect.classList.remove('opacity-60', 'cursor-not-allowed', 'bg-slate-200');
-                    if (hint) hint.classList.add('hidden');
+                const isGantiProduk = (mekaSelect.value === 'Ganti Produk');
+
+                if (statusSelect) {
+                    if (isGantiProduk) {
+                        statusSelect.disabled = true;
+                        statusSelect.classList.add('opacity-60', 'cursor-not-allowed', 'bg-slate-200');
+                        if (hint) hint.classList.remove('hidden');
+                    } else {
+                        statusSelect.disabled = false;
+                        statusSelect.classList.remove('opacity-60', 'cursor-not-allowed', 'bg-slate-200');
+                        if (hint) hint.classList.add('hidden');
+                    }
                 }
+
+                this.populateMetodeKlaimDropdown(prefix, isGantiProduk);
+            },
+
+            populateMetodeKlaimDropdown(prefix, isGantiProduk) {
+                const metodeElemId = `${prefix}-metode`;
+                const el = document.getElementById(metodeElemId);
+                if (!el) return;
+
+                const curVal = el.value;
+                if (this.tomSelectInstances[metodeElemId]) {
+                    try { this.tomSelectInstances[metodeElemId].destroy(); } catch (e) {}
+                    delete this.tomSelectInstances[metodeElemId];
+                }
+
+                const catKey = isGantiProduk ? 'METODE_KLAIM_GANTI_PRODUK' : 'METODE_KLAIM';
+                const items = CACHE.master[catKey] || [];
+                const opts = [`<option value="">-- Pilih Metode --</option>`, ...items.map(i => `<option value="${i.nilai}">${i.nilai}</option>`)];
+
+                if (!isGantiProduk) {
+                    opts.push(`<option value="__ADD_NEW__" class="font-bold text-[#D50000]">➕ + Tambah Item Baru...</option>`);
+                }
+
+                el.innerHTML = opts.join('');
+                if (curVal && items.some(i => i.nilai === curVal)) {
+                    el.value = curVal;
+                } else if (isGantiProduk && items.length > 0) {
+                    el.value = items[0].nilai;
+                }
+
+                const ts = new TomSelect(el, {
+                    create: false,
+                    maxItems: 1,
+                    placeholder: '-- Pilih Metode --',
+                    allowEmptyOption: true,
+                    controlInput: null,
+                    plugins: ['dropdown_input'],
+                    onChange: (val) => {
+                        if (val === '__ADD_NEW__') {
+                            ts.setValue('', true);
+                            this.openQuickAddMaster(catKey, metodeElemId);
+                        }
+                    }
+                });
+                this.tomSelectInstances[metodeElemId] = ts;
             },
 
             renderKlaimBarangTable() {
@@ -2534,12 +2558,20 @@
 
                 const tbody = document.getElementById('tbody-klaim-barang');
                 if (paginated.pageData.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400">Tidak ada data klaim barang (Ganti Produk).</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400">Tidak ada data klaim barang (Ganti Produk).</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
+                        const rowNum = index + 1;
                         const filesList = Array.isArray(r.files_skp) ? r.files_skp : [];
                         const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
+
+                        const metode = r.metode_klaim || 'Ganti Produk HET';
+                        const isNet = (metode === 'Ganti Produk NET');
+                        const nominalKlaim = Number(r.nominal_klaim) || 0;
+                        const nominalHet = Number(r.nominal_het) || 0;
+                        const nominalHpp = Number(r.nominal_hpp) || 0;
+
+                        const selisih = isNet ? (nominalHpp - nominalKlaim) : (nominalHet - nominalKlaim);
 
                         return `
                             <tr class="hover:bg-slate-50 transition">
@@ -2556,11 +2588,17 @@
                                     <div class="font-semibold text-slate-800">${r.nomor_skp || '-'}</div>
                                     <div class="text-[10px] space-y-0.5">${fileLinks || '<span class="text-slate-400">-</span>'}</div>
                                 </td>
-                                <td class="p-3 font-semibold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</td>
-                                <td class="p-3 font-medium">${Utils.formatRupiah(r.nominal_het)}</td>
-                                <td class="p-3 font-medium">${Utils.formatRupiah(r.nominal_hpp)}</td>
-                                <td class="p-3 font-bold ${r.selisih < 0 ? 'text-red-600' : 'text-slate-700'}">${Utils.formatRupiah(r.selisih)}</td>
-                                <td class="p-3 font-mono font-semibold">${r.nomor_po_csa || '-'}</td>
+                                <td class="p-3">
+                                    <span class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded border border-purple-100 font-semibold text-[10px]">${metode}</span>
+                                </td>
+                                <td class="p-3 font-semibold text-blue-600">${Utils.formatRupiah(nominalKlaim)}</td>
+                                <td class="p-3 font-medium">${Utils.formatRupiah(nominalHet)}</td>
+                                <td class="p-3 font-medium">${Utils.formatRupiah(nominalHpp)}</td>
+                                <td class="p-3 font-bold ${selisih < 0 ? 'text-red-600' : 'text-slate-700'}">
+                                    ${Utils.formatRupiah(selisih)}
+                                    <div class="text-[9px] font-medium text-slate-400">(${isNet ? 'NET: HPP-Klaim' : 'HET: HET-Klaim'})</div>
+                                </td>
+                                <td class="p-3 font-mono font-semibold text-[11px] max-w-xs truncate" title="${r.nomor_po_csa || '-'}">${r.nomor_po_csa || '-'}</td>
                                 <td class="p-3"><span class="badge ${CONFIG.BADGE_COLORS[r.status_klaim] || 'bg-slate-100'}">${r.status_klaim}</span></td>
                                 <td class="p-3 text-center">
                                     <button onclick="App.openModalKlaimBarang('${r.id}')" class="px-2.5 py-1 bg-red-50 text-[#D50000] hover:bg-red-100 rounded-lg font-semibold flex items-center gap-1 mx-auto" title="Update Details & Sync Status">
@@ -2581,6 +2619,10 @@
                             const filesList = Array.isArray(r.files_skp) ? r.files_skp : [];
                             const fileLinks = filesList.map(f => `<a href="${f.fileUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-xs">attach_file</span>${f.fileName}</a>`).join('');
 
+                            const metode = r.metode_klaim || 'Ganti Produk HET';
+                            const isNet = (metode === 'Ganti Produk NET');
+                            const selisih = isNet ? ((Number(r.nominal_hpp) || 0) - (Number(r.nominal_klaim) || 0)) : ((Number(r.nominal_het) || 0) - (Number(r.nominal_klaim) || 0));
+
                             return `
                                 <div class="card-modern p-4 space-y-2">
                                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -2593,14 +2635,16 @@
                                     <div class="grid grid-cols-2 gap-2 text-[11px]">
                                         <div><span class="text-slate-400">Periode:</span> <span class="font-semibold">${Utils.formatPeriodeBulan(r.periode_bulan)}</span></div>
                                         <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
-                                        <div><span class="text-slate-400">Nominal HET:</span> <span class="font-semibold">${Utils.formatRupiah(r.nominal_het)}</span></div>
+                                        <div><span class="text-slate-400">Metode:</span> <span class="font-semibold text-purple-700">${metode}</span></div>
                                         <div><span class="text-slate-400">PO CSA:</span> <span class="font-semibold">${r.nomor_po_csa || '-'}</span></div>
+                                        <div><span class="text-slate-400">Total HET:</span> <span class="font-semibold">${Utils.formatRupiah(r.nominal_het)}</span></div>
+                                        <div><span class="text-slate-400">Total HPP:</span> <span class="font-semibold">${Utils.formatRupiah(r.nominal_hpp)}</span></div>
                                     </div>
                                     ${fileLinks ? `<div class="text-[11px] border-t border-slate-50 pt-1.5"><span class="text-slate-400 block mb-0.5">File SKP:</span>${fileLinks}</div>` : ''}
                                     <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
                                         <div>
-                                            <p class="text-[10px] text-slate-400">Nominal Klaim</p>
-                                            <p class="font-bold text-blue-600">${Utils.formatRupiah(r.nominal_klaim)}</p>
+                                            <p class="text-[10px] text-slate-400">Selisih (${isNet ? 'NET' : 'HET'})</p>
+                                            <p class="font-bold ${selisih < 0 ? 'text-red-600' : 'text-slate-800'}">${Utils.formatRupiah(selisih)}</p>
                                         </div>
                                         <button onclick="App.openModalKlaimBarang('${r.id}')" class="px-3 py-1.5 bg-[#D50000] text-white rounded-lg font-semibold text-xs">Update Klaim</button>
                                     </div>
@@ -2622,24 +2666,117 @@
                 document.getElementById('kb-id').value = item.id;
                 document.getElementById('kb-sumber-lbl').innerText = item.sumber_program || '-';
                 document.getElementById('kb-ref-id-lbl').innerText = item.ref_id_program || '-';
-                document.getElementById('kb-brand-lbl').innerText = `${item.nama_brand} (${item.nama_grup_brand})`;
+
+                const metode = item.metode_klaim || 'Ganti Produk HET';
+                document.getElementById('kb-metode-lbl').innerText = metode;
+                document.getElementById('kb-metode-klaim-val').value = metode;
+
                 document.getElementById('kb-nominal-klaim-lbl').innerText = Utils.formatRupiah(item.nominal_klaim);
                 document.getElementById('kb-nominal-klaim-val').value = item.nominal_klaim || 0;
 
-                document.getElementById('kb-nominal-het').value = Utils.formatCurrencyValue(item.nominal_het);
-                document.getElementById('kb-nominal-hpp').value = Utils.formatCurrencyValue(item.nominal_hpp);
-                document.getElementById('kb-nomor-po-csa').value = item.nomor_po_csa || '';
                 this.setSelectValue('kb-status', item.status_klaim || '');
 
-                this.calculateKlaimSelisih();
+                const container = document.getElementById('kb-po-csa-container');
+                container.innerHTML = '';
+
+                let poItems = [];
+                if (Array.isArray(item.items_po_csa) && item.items_po_csa.length > 0) {
+                    poItems = item.items_po_csa;
+                } else if (item.nomor_po_csa || item.nominal_het || item.nominal_hpp) {
+                    poItems = [{
+                        nomor_po_csa: item.nomor_po_csa || '',
+                        nominal_het: item.nominal_het || 0,
+                        nominal_hpp: item.nominal_hpp || 0
+                    }];
+                } else {
+                    poItems = [{ nomor_po_csa: '', nominal_het: 0, nominal_hpp: 0 }];
+                }
+
+                poItems.forEach(po => this.addPoCsaRow(po));
+                this.calculateKlaimTotals();
+
                 Utils.openModal('modal-klaim-barang');
             },
 
-            calculateKlaimSelisih() {
-                const het = Utils.parseCurrencyValue(document.getElementById('kb-nominal-het').value);
-                const klaim = Number(document.getElementById('kb-nominal-klaim-val').value) || 0;
-                const selisih = het - klaim;
-                document.getElementById('kb-selisih-lbl').innerText = Utils.formatRupiah(selisih);
+            addPoCsaRow(poData = { nomor_po_csa: '', nominal_het: 0, nominal_hpp: 0 }) {
+                const container = document.getElementById('kb-po-csa-container');
+                if (!container) return;
+
+                const rowId = 'po-row-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+                const rowDiv = document.createElement('div');
+                rowDiv.id = rowId;
+                rowDiv.className = 'kb-po-row flex items-center gap-2 bg-white p-2 rounded-lg border border-slate-200 text-xs shadow-sm';
+
+                rowDiv.innerHTML = `
+                    <div class="flex-1 min-w-[120px]">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase">No. PO CSA</label>
+                        <input type="text" class="po-num-input w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-1 focus:ring-red-500 font-semibold" placeholder="Nomor PO..." value="${poData.nomor_po_csa || ''}">
+                    </div>
+                    <div class="w-28 sm:w-32">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase">Nominal HET (Rp)</label>
+                        <input type="text" inputmode="numeric" oninput="Utils.formatCurrencyInput(this); App.calculateKlaimTotals();" class="po-het-input w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-1 focus:ring-red-500 font-semibold text-slate-800" placeholder="0" value="${Utils.formatCurrencyValue(poData.nominal_het)}">
+                    </div>
+                    <div class="w-28 sm:w-32">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase">Nominal HPP (Rp)</label>
+                        <input type="text" inputmode="numeric" oninput="Utils.formatCurrencyInput(this); App.calculateKlaimTotals();" class="po-hpp-input w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-1 focus:ring-red-500 font-semibold text-slate-800" placeholder="0" value="${Utils.formatCurrencyValue(poData.nominal_hpp)}">
+                    </div>
+                    <button type="button" onclick="App.removePoCsaRow('${rowId}')" class="p-1 text-slate-400 hover:text-red-600 mt-3 rounded hover:bg-red-50" title="Hapus PO">
+                        <span class="material-symbols-outlined text-base">delete</span>
+                    </button>
+                `;
+
+                container.appendChild(rowDiv);
+                this.calculateKlaimTotals();
+            },
+
+            removePoCsaRow(rowId) {
+                const container = document.getElementById('kb-po-csa-container');
+                const row = document.getElementById(rowId);
+                if (container && row) {
+                    if (container.children.length > 1) {
+                        row.remove();
+                    } else {
+                        Utils.showToast('Minimal harus ada 1 entri PO CSA.', 'warning');
+                    }
+                }
+                this.calculateKlaimTotals();
+            },
+
+            calculateKlaimTotals() {
+                const rows = document.querySelectorAll('.kb-po-row');
+                let totalHet = 0;
+                let totalHpp = 0;
+
+                rows.forEach(r => {
+                    const hetVal = Utils.parseCurrencyValue(r.querySelector('.po-het-input')?.value || '0');
+                    const hppVal = Utils.parseCurrencyValue(r.querySelector('.po-hpp-input')?.value || '0');
+                    totalHet += hetVal;
+                    totalHpp += hppVal;
+                });
+
+                const klaimVal = Number(document.getElementById('kb-nominal-klaim-val').value) || 0;
+                const metode = document.getElementById('kb-metode-klaim-val').value || 'Ganti Produk HET';
+                const isNet = (metode === 'Ganti Produk NET');
+
+                const selisih = isNet ? (totalHpp - klaimVal) : (totalHet - klaimVal);
+
+                document.getElementById('kb-total-het-lbl').innerText = Utils.formatRupiah(totalHet);
+                document.getElementById('kb-total-hpp-lbl').innerText = Utils.formatRupiah(totalHpp);
+
+                const selisihTitle = document.getElementById('kb-selisih-title-lbl');
+                if (selisihTitle) {
+                    selisihTitle.innerText = isNet ? 'Selisih NET (Total HPP - Klaim):' : 'Selisih HET (Total HET - Klaim):';
+                }
+
+                const selisihLbl = document.getElementById('kb-selisih-lbl');
+                if (selisihLbl) {
+                    selisihLbl.innerText = Utils.formatRupiah(selisih);
+                    if (selisih < 0) {
+                        selisihLbl.className = 'font-bold text-red-600 text-sm';
+                    } else {
+                        selisihLbl.className = 'font-bold text-amber-900 text-sm';
+                    }
+                }
             },
 
             async saveKlaimBarang(e) {
@@ -2648,17 +2785,41 @@
                 const item = CACHE.klaimBarang.find(x => x.id === kbId);
                 if (!item) return;
 
-                const het = Utils.parseCurrencyValue(document.getElementById('kb-nominal-het').value);
-                const hpp = Utils.parseCurrencyValue(document.getElementById('kb-nominal-hpp').value);
-                const selisih = het - (Number(item.nominal_klaim) || 0);
+                const poRows = document.querySelectorAll('.kb-po-row');
+                const itemsPoCsa = [];
+                const poNumbers = [];
+                let totalHet = 0;
+                let totalHpp = 0;
+
+                poRows.forEach(r => {
+                    const poNum = (r.querySelector('.po-num-input')?.value || '').trim();
+                    const hetVal = Utils.parseCurrencyValue(r.querySelector('.po-het-input')?.value || '0');
+                    const hppVal = Utils.parseCurrencyValue(r.querySelector('.po-hpp-input')?.value || '0');
+
+                    if (poNum) poNumbers.push(poNum);
+                    totalHet += hetVal;
+                    totalHpp += hppVal;
+
+                    itemsPoCsa.push({
+                        nomor_po_csa: poNum,
+                        nominal_het: hetVal,
+                        nominal_hpp: hppVal
+                    });
+                });
+
+                const klaimVal = Number(item.nominal_klaim) || 0;
+                const metode = item.metode_klaim || 'Ganti Produk HET';
+                const isNet = (metode === 'Ganti Produk NET');
+                const selisih = isNet ? (totalHpp - klaimVal) : (totalHet - klaimVal);
                 const newStatus = document.getElementById('kb-status').value;
 
                 const payload = {
                     id: kbId,
-                    nominal_het: het,
-                    nominal_hpp: hpp,
+                    nominal_het: totalHet,
+                    nominal_hpp: totalHpp,
                     selisih: selisih,
-                    nomor_po_csa: document.getElementById('kb-nomor-po-csa').value,
+                    nomor_po_csa: poNumbers.join(', '),
+                    items_po_csa: itemsPoCsa,
                     status_klaim: newStatus,
                     updated_at: new Date().toISOString()
                 };
@@ -2703,7 +2864,7 @@
                     tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">Tidak ada data pemakaian budget.</td></tr>`;
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
-                        const rowNum = (paginated.currentPage - 1) * (paginated.pageSize || 10) + index + 1;
+                        const rowNum = index + 1;
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
@@ -2971,6 +3132,7 @@
                         'CHANNEL': 'Channel',
                         'MEKANISME_KLAIM': 'Mekanisme Klaim',
                         'METODE_KLAIM': 'Metode Klaim',
+                        'METODE_KLAIM_GANTI_PRODUK': 'Metode Klaim (Ganti Produk)',
                         'STATUS_KLAIM': 'Status Klaim',
                         'STATUS_PENCAPAIAN': 'Status Pencapaian',
                         'NAMA_PROGRAM': 'Nama Program',
@@ -3128,6 +3290,7 @@
                     'CHANNEL': 'Channel',
                     'MEKANISME_KLAIM': 'Mekanisme Klaim',
                     'METODE_KLAIM': 'Metode Klaim',
+                    'METODE_KLAIM_GANTI_PRODUK': 'Metode Klaim (Ganti Produk)',
                     'STATUS_KLAIM': 'Status Klaim',
                     'STATUS_PENCAPAIAN': 'Status Pencapaian',
                     'NAMA_PROGRAM': 'Nama Program',
@@ -3498,7 +3661,6 @@
 
                         for (let i = 0; i < rows.length; i++) {
                             const rawRow = rows[i];
-                            // Normalisasi header agar tidak bermasalah dengan spasi berlebih
                             const row = {};
                             Object.keys(rawRow).forEach(k => {
                                 row[k.trim()] = rawRow[k];
@@ -3530,7 +3692,6 @@
                                     const metode = String(row['Metode Klaim'] || row['metode_klaim'] || '').trim();
                                     const statusKlaim = String(row['Status Klaim'] || row['status_klaim'] || 'Draft / Belum Diklaim').trim();
 
-                                    // Otomatis buat Master jika belum ada
                                     if (channel) await this.autoCreateMissingMaster('CHANNEL', channel);
                                     if (grupBrand) await this.autoCreateMissingMaster('NAMA_GRUP_BRAND', grupBrand);
                                     if (brand) await this.autoCreateMissingMaster('NAMA_BRAND', brand);
@@ -3605,7 +3766,6 @@
                                     const metode = String(row['Metode Klaim'] || row['metode_klaim'] || '').trim();
                                     const statusKlaim = String(row['Status Klaim'] || row['status_klaim'] || 'Draft / Belum Diklaim').trim();
 
-                                    // Otomatis buat Master jika belum ada
                                     if (progName) await this.autoCreateMissingMaster('NAMA_PROGRAM', progName);
                                     if (grupBrand) await this.autoCreateMissingMaster('NAMA_GRUP_BRAND', grupBrand);
                                     if (brand) await this.autoCreateMissingMaster('NAMA_BRAND', brand);
