@@ -172,8 +172,8 @@
     <div id="login-screen" class="fixed inset-0 z-40 bg-slate-100 flex items-center justify-center p-4">
         <div class="card-modern w-full max-w-md p-8 border-t-4 border-t-[#D50000]">
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-red-50 text-[#D50000] rounded-2xl mb-3 shadow-inner overflow-hidden p-2">
-                    <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/80x80/D50000/ffffff?text=LOGO';">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white border border-slate-200 text-[#D50000] rounded-2xl mb-3 shadow-sm overflow-hidden p-2">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/80x80/ffffff/D50000?text=LOGO';">
                 </div>
                 <h1 class="text-2xl font-bold text-slate-800 tracking-wide">SURYATOKOKU</h1>
                 <p class="text-sm text-slate-500 mt-1">Monitoring Program & Klaim Supplier</p>
@@ -213,8 +213,8 @@
     <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col z-30 transition-all duration-300 -translate-x-full fixed left-0 top-0 h-full shadow-2xl">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#D50000] text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-md shadow-red-500/20 overflow-hidden p-1.5">
-                    <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/40x40/D50000/ffffff?text=S';">
+                <div class="w-10 h-10 bg-white border border-slate-200 text-slate-800 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm overflow-hidden p-1.5">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/40x40/ffffff/D50000?text=S';">
                 </div>
                 <div>
                     <h2 class="font-bold text-slate-800 text-sm leading-tight">Suryatokoku</h2>
@@ -637,7 +637,7 @@
             <!-- PAGE: BUDGET -->
             <section id="view-budget" class="page-view space-y-5 hidden">
                 <div class="card-modern p-4 space-y-3">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Periode Bulan</label>
                             <input type="month" id="filter-bud-periode" onchange="App.applyFilters('budget')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
@@ -652,6 +652,12 @@
                             <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Brand</label>
                             <select id="filter-bud-brand" onchange="App.applyFilters('budget')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
                                 <option value="">-- Semua Brand --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status Pemakaian</label>
+                            <select id="filter-bud-status" onchange="App.applyFilters('budget')" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">-- Semua Status --</option>
                             </select>
                         </div>
                     </div>
@@ -675,7 +681,7 @@
                             <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
                                 <tr>
                                     <th class="p-3 w-10 text-center">No.</th>
-                                    <th class="p-3">Tanggal / Periode</th>
+                                    <th class="p-3">Periode Pemakaian</th>
                                     <th class="p-3">Sumber Program</th>
                                     <th class="p-3">Grup & Brand</th>
                                     <th class="p-3">Channel</th>
@@ -1101,6 +1107,13 @@
                     </select>
                 </div>
 
+                <div id="bud-sec-nominal-source" class="hidden">
+                    <label class="block font-semibold text-slate-700 mb-1">Acuan Nominal Budget *</label>
+                    <select id="bud-nominal-source" onchange="App.handleBudgetNominalSourceChange()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="">-- Pilih Acuan Nominal --</option>
+                    </select>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Periode Bulan *</label>
@@ -1126,8 +1139,17 @@
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Pemakaian *</label>
-                    <input type="date" id="bud-tgl-pemakaian" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    <label class="block font-semibold text-slate-700 mb-1">Periode Pemakaian *</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <span class="block text-[10px] font-semibold text-slate-500 mb-0.5">Dari Tanggal *</span>
+                            <input type="date" id="bud-tgl-mulai" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-semibold text-slate-500 mb-0.5">Sampai Tanggal *</span>
+                            <input type="date" id="bud-tgl-akhir" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -2852,7 +2874,8 @@
                 const filters = {
                     periode_bulan: document.getElementById('filter-bud-periode').value,
                     nama_grup_brand: document.getElementById('filter-bud-grup').value,
-                    nama_brand: document.getElementById('filter-bud-brand').value
+                    nama_brand: document.getElementById('filter-bud-brand').value,
+                    status_pemakaian: document.getElementById('filter-bud-status').value
                 };
                 const search = document.getElementById('search-budget').value;
 
@@ -2865,11 +2888,15 @@
                 } else {
                     tbody.innerHTML = paginated.pageData.map((r, index) => {
                         const rowNum = index + 1;
+                        const tglMulai = r.tanggal_pemakaian || r.tanggal_mulai;
+                        const tglAkhir = r.tanggal_berakhir;
+                        const periodeDisplay = tglAkhir ? `${Utils.formatDate(tglMulai)} s/d ${Utils.formatDate(tglAkhir)}` : Utils.formatDate(tglMulai);
+
                         return `
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 text-center text-slate-400 font-medium">${rowNum}</td>
                                 <td class="p-3">
-                                    <span class="font-semibold text-slate-800">${Utils.formatDate(r.tanggal_pemakaian)}</span>
+                                    <span class="font-semibold text-slate-800">${periodeDisplay}</span>
                                     <div class="text-[10px] text-slate-400">Periode: ${Utils.formatPeriodeBulan(r.periode_bulan)}</div>
                                 </td>
                                 <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-semibold">${r.sumber_program} (${r.ref_id_program || 'Manual'})</span></td>
@@ -2895,28 +2922,34 @@
                     if (paginated.pageData.length === 0) {
                         cardsContainer.innerHTML = `<div class="card-modern p-6 text-center text-slate-400 text-xs">Tidak ada data Budget.</div>`;
                     } else {
-                        cardsContainer.innerHTML = paginated.pageData.map(r => `
-                            <div class="card-modern p-4 space-y-2">
-                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                    <span class="font-bold text-slate-800 text-xs">${r.pemakaian_budget}</span>
-                                    <span class="badge ${CONFIG.BADGE_COLORS[r.status_pemakaian] || 'bg-slate-100'}">${r.status_pemakaian}</span>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2 text-[11px]">
-                                    <div><span class="text-slate-400">Tanggal:</span> <span class="font-semibold">${Utils.formatDate(r.tanggal_pemakaian)}</span></div>
-                                    <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
-                                </div>
-                                <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                                    <div>
-                                        <p class="text-[10px] text-slate-400">Nominal Budget</p>
-                                        <p class="font-bold text-amber-600">${Utils.formatRupiah(r.nominal_budget)}</p>
+                        cardsContainer.innerHTML = paginated.pageData.map(r => {
+                            const tglMulai = r.tanggal_pemakaian || r.tanggal_mulai;
+                            const tglAkhir = r.tanggal_berakhir;
+                            const periodeDisplay = tglAkhir ? `${Utils.formatDate(tglMulai)} s/d ${Utils.formatDate(tglAkhir)}` : Utils.formatDate(tglMulai);
+
+                            return `
+                                <div class="card-modern p-4 space-y-2">
+                                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                        <span class="font-bold text-slate-800 text-xs">${r.pemakaian_budget}</span>
+                                        <span class="badge ${CONFIG.BADGE_COLORS[r.status_pemakaian] || 'bg-slate-100'}">${r.status_pemakaian}</span>
                                     </div>
-                                    <div class="flex gap-1">
-                                        <button onclick="App.openModalBudget('${r.id}')" class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-semibold">Edit</button>
-                                        <button onclick="App.deleteRecord('budget', '${r.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-semibold">Hapus</button>
+                                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                        <div><span class="text-slate-400">Periode Pemakaian:</span> <span class="font-semibold">${periodeDisplay}</span></div>
+                                        <div><span class="text-slate-400">Brand:</span> <span class="font-semibold">${r.nama_brand}</span></div>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                                        <div>
+                                            <p class="text-[10px] text-slate-400">Nominal Budget</p>
+                                            <p class="font-bold text-amber-600">${Utils.formatRupiah(r.nominal_budget)}</p>
+                                        </div>
+                                        <div class="flex gap-1">
+                                            <button onclick="App.openModalBudget('${r.id}')" class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-semibold">Edit</button>
+                                            <button onclick="App.deleteRecord('budget', '${r.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-semibold">Hapus</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `).join('');
+                            `;
+                        }).join('');
                     }
                 }
 
@@ -2930,11 +2963,11 @@
                 const refSelect = document.getElementById('bud-ref-program');
                 if (refSelect) {
                     let opts = ['<option value="">-- Pilih Program --</option>'];
-                    CACHE.sellOut.forEach(item => {
-                        opts.push(`<option value="SOUT|${item.id}">Sell Out: ${item.id} - ${item.promo_nama_event}</option>`);
+                    CACHE.sellOut.forEach((item, index) => {
+                        opts.push(`<option value="SOUT|${item.id}">Sell Out: No. ${index + 1} - ${item.nama_brand || ''} - ${item.promo_nama_event || ''}</option>`);
                     });
-                    CACHE.sellIn.forEach(item => {
-                        opts.push(`<option value="SIN|${item.id}">Sell In: ${item.id} - ${item.nama_program}</option>`);
+                    CACHE.sellIn.forEach((item, index) => {
+                        opts.push(`<option value="SIN|${item.id}">Sell In: No. ${index + 1} - ${item.nama_brand || ''} - ${item.nama_program || ''}</option>`);
                     });
                     refSelect.innerHTML = opts.join('');
                 }
@@ -2948,7 +2981,8 @@
                     this.setSelectValue('bud-grup', item.nama_grup_brand || '');
                     this.setSelectValue('bud-brand', item.nama_brand || '');
                     document.getElementById('bud-nominal').value = Utils.formatCurrencyValue(item.nominal_budget);
-                    document.getElementById('bud-tgl-pemakaian').value = item.tanggal_pemakaian || '';
+                    document.getElementById('bud-tgl-mulai').value = item.tanggal_pemakaian || item.tanggal_mulai || '';
+                    document.getElementById('bud-tgl-akhir').value = item.tanggal_berakhir || '';
                     document.getElementById('bud-keterangan').value = item.pemakaian_budget || '';
                     this.setSelectValue('bud-status', item.status_pemakaian || '');
 
@@ -2960,7 +2994,11 @@
                 } else {
                     document.getElementById('form-budget').reset();
                     document.getElementById('bud-id').value = '';
+                    document.getElementById('bud-nominal').value = '0';
                     ['bud-channel', 'bud-grup', 'bud-brand', 'bud-status'].forEach(k => this.setSelectValue(k, ''));
+                    document.getElementById('bud-tgl-mulai').value = '';
+                    document.getElementById('bud-tgl-akhir').value = '';
+                    document.getElementById('bud-keterangan').value = '';
                     this.toggleBudgetSourceMode('REF');
                 }
 
@@ -2969,15 +3007,29 @@
 
             toggleBudgetSourceMode(mode) {
                 const secRef = document.getElementById('bud-sec-ref');
+                const secNomSource = document.getElementById('bud-sec-nominal-source');
                 if (secRef) {
-                    if (mode === 'REF') secRef.classList.remove('hidden');
-                    else secRef.classList.add('hidden');
+                    if (mode === 'REF') {
+                        secRef.classList.remove('hidden');
+                        if (document.getElementById('bud-ref-program').value) {
+                            if (secNomSource) secNomSource.classList.remove('hidden');
+                        }
+                    } else {
+                        secRef.classList.add('hidden');
+                        if (secNomSource) secNomSource.classList.add('hidden');
+                    }
                 }
             },
 
             handleBudgetProgramSelect() {
                 const val = document.getElementById('bud-ref-program').value;
-                if (!val) return;
+                const secNomSource = document.getElementById('bud-sec-nominal-source');
+                const sourceSelect = document.getElementById('bud-nominal-source');
+
+                if (!val) {
+                    if (secNomSource) secNomSource.classList.add('hidden');
+                    return;
+                }
 
                 const [type, id] = val.split('|');
                 if (type === 'SOUT') {
@@ -2987,8 +3039,16 @@
                         this.setSelectValue('bud-grup', item.nama_grup_brand || '');
                         this.setSelectValue('bud-brand', item.nama_brand || '');
                         this.setSelectValue('bud-channel', item.channel || '');
-                        document.getElementById('bud-nominal').value = Utils.formatCurrencyValue(item.budget_skp);
-                        document.getElementById('bud-keterangan').value = item.promo_nama_event || '';
+
+                        if (sourceSelect) {
+                            sourceSelect.innerHTML = `
+                                <option value="">-- Pilih Acuan Nominal --</option>
+                                <option value="BUDGET_SKP">Budget SKP (${Utils.formatRupiah(item.budget_skp)})</option>
+                                <option value="NOMINAL_KLAIM">Nominal Klaim (${Utils.formatRupiah(item.nominal_klaim)})</option>
+                            `;
+                            sourceSelect.value = '';
+                        }
+                        if (secNomSource) secNomSource.classList.remove('hidden');
                     }
                 } else if (type === 'SIN') {
                     const item = CACHE.sellIn.find(x => x.id === id);
@@ -2996,10 +3056,22 @@
                         document.getElementById('bud-periode').value = Utils.formatMonthValue(item.periode_bulan);
                         this.setSelectValue('bud-grup', item.nama_grup_brand || '');
                         this.setSelectValue('bud-brand', item.nama_brand || '');
-                        document.getElementById('bud-nominal').value = Utils.formatCurrencyValue(item.cashback);
-                        document.getElementById('bud-keterangan').value = item.nama_program || '';
+
+                        if (sourceSelect) {
+                            sourceSelect.innerHTML = `
+                                <option value="">-- Pilih Acuan Nominal --</option>
+                                <option value="CASHBACK">Cashback (${Utils.formatRupiah(item.cashback)})</option>
+                                <option value="NOMINAL_KLAIM">Nominal Klaim (${Utils.formatRupiah(item.nominal_klaim)})</option>
+                            `;
+                            sourceSelect.value = '';
+                        }
+                        if (secNomSource) secNomSource.classList.remove('hidden');
                     }
                 }
+            },
+
+            handleBudgetNominalSourceChange() {
+                // Nominal Pemakaian Budget remains independent / manual entry as requested!
             },
 
             async saveBudget(e) {
@@ -3029,7 +3101,8 @@
                     nama_grup_brand: document.getElementById('bud-grup').value,
                     nama_brand: document.getElementById('bud-brand').value,
                     nominal_budget: Utils.parseCurrencyValue(document.getElementById('bud-nominal').value),
-                    tanggal_pemakaian: Utils.sanitizeDate(document.getElementById('bud-tgl-pemakaian').value),
+                    tanggal_pemakaian: Utils.sanitizeDate(document.getElementById('bud-tgl-mulai').value),
+                    tanggal_berakhir: Utils.sanitizeDate(document.getElementById('bud-tgl-akhir').value),
                     pemakaian_budget: document.getElementById('bud-keterangan').value,
                     status_pemakaian: document.getElementById('bud-status').value,
                     updated_at: new Date().toISOString()
@@ -3271,6 +3344,7 @@
                     populate('bud-status', 'STATUS_PEMAKAIAN_BUDGET');
                     populate('filter-bud-grup', 'NAMA_GRUP_BRAND', '-- Semua Grup --');
                     populate('filter-bud-brand', 'NAMA_BRAND', '-- Semua Brand --');
+                    populate('filter-bud-status', 'STATUS_PEMAKAIAN_BUDGET', '-- Semua Status --');
                 }
             },
 
